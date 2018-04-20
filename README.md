@@ -20,8 +20,6 @@ Qingmi(青咪)是一个基于Python3+Flask二次开发的服务层框架。
 - Flask-Caching
 - Flask-Admin
 - Flask-Uploads
-- httpie
-- fabric
 - ipython
 - Pillow
 
