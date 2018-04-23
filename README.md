@@ -2,6 +2,7 @@
 Qingmi(青咪)是一个基于Python3+Flask二次开发的应用层框架。
 
 采用的技术栈：
+
 - python3
 - flask
 - Werkzeug
@@ -24,6 +25,7 @@ Qingmi(青咪)是一个基于Python3+Flask二次开发的应用层框架。
 - Pillow
 
 功能特性：
+
 - 数据统计
 - 短信发送
 - 邮件发送
@@ -40,6 +42,9 @@ Qingmi(青咪)是一个基于Python3+Flask二次开发的应用层框架。
 - 通用API
 - 第三方登录
 - 微信公众平台
+- 部署
+- 辅助工具helper(加解密[hash/md5]/json/http/ip/日志/正则表达式/时间和日期/...)
+- 单元测试
 
 ## 用法
 
