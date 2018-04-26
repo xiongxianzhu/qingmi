@@ -1,5 +1,5 @@
 # qingmi-青咪(情迷)
-Qingmi(青咪)是一个基于Python3+Flask二次开发的应用层框架。
+Qingmi(青咪)是一个基于Python3+Flask二次开发的应用层框架， 其内部封装了常用的模块和工具集， 主要用于针对flask web快速高效开发。
 
 采用的技术栈：
 

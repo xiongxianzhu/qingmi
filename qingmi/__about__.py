@@ -1,0 +1,11 @@
+__title__ = 'qingmi'
+__description__ = 'Common modules and toolsets for rapid and efficient development of flask Web.'
+__url__ = 'https://www.zhuxiongxian.cc'
+__version_info__ = ('0', '1', '0')
+__version__ = '.'.join(__version_info__)
+__author__ = 'zhuxiongxian'
+__author_email__ = 'zhuxiongxian@gmail.com'
+__maintainer__ = 'zhuxiongxian'
+__maintainer_email__ = 'zhuxiongxian@gmail.com'
+__license__ = 'BSD'
+__copyright__ = '(c) 2018 by zhuxiongxian'
