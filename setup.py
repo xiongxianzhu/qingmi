@@ -35,8 +35,8 @@ setup(
         'click'
     ],
     classifiers=[
-        'Framework :: qingmi',
-        'Development Status :: 1 - Beta',
+        'Framework :: Flask',
+        'Development Status :: 1 - Planning',
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
@@ -57,5 +57,8 @@ setup(
         'console_scripts': [
             'qingmi = qingmi.cli:main',
         ],
+    },
+    project_urls={
+        'Source': about['__source__'],
     },
 )

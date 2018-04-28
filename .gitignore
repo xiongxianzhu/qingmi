@@ -3,21 +3,21 @@
 .flaskenv
 *.pyc
 *.pyo
-env/
+env
 env*
-dist/
-build/
+dist
+build
 *.egg
-*.egg-info/
+*.egg-info
 _mailinglist
-.tox/
-.cache/
-.pytest_cache/
-.idea/
-docs/_build/
+.tox
+.cache
+.pytest_cache
+.idea
+docs/_build
 
 # Coverage reports
-htmlcov/
+htmlcov
 .coverage
 .coverage.*
 *,cover
