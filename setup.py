@@ -17,7 +17,7 @@ def read_file(filename):
         return ''
 
 setup(
-    name=about['__title__'],
+    name=about['__name__'],
     version=about['__version__'],
     description=about['__description__'],
     long_description=read_file('README.rst'),
@@ -31,10 +31,11 @@ setup(
     zip_safe=False,
     platforms='any',
     install_requires=[
-        'Flask'
+        'Flask',
+        'click'
     ],
     classifiers=[
-        'Framework :: Flask',
+        'Framework :: qingmi',
         'Development Status :: 1 - Beta',
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
@@ -43,10 +44,13 @@ setup(
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
+        'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
+        'Topic :: Software Development :: Libraries :: Application Frameworks',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
     extras_require={
+        "bcrypt": ["bcrypt"],
         'testing': ['pytest'],
     },
     entry_points={
