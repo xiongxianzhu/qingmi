@@ -1,7 +1,7 @@
 # coding: utf-8
 from __future__ import unicode_literals
 
-def success(_data, **kwargs):
+def success(_data=None, **kwargs):
     res = dict(code=0, key='SUCCESS')
     if _data is not None:
         res['data'] = _data
