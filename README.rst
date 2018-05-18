@@ -27,6 +27,7 @@ Qingmi(青咪， 取自 ``情迷`` 谐音， 有 ``亲昵`` 之意)是一个基�
 - ipython
 - Pillow
 - click
+- wheezy.captcha
 
 功能特性：
 

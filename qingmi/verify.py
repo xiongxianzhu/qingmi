@@ -38,7 +38,7 @@ for char in '0oIl1Z2':
 
 class VerifyManager(object):
 
-    def __init__(self, app=None, code_url='/verify_code'):
+    def __init__(self, app=None, code_url='/verify-code'):
         self.code_url = code_url
         if app is not None:
             self.init_app(app)
