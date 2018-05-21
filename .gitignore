@@ -21,3 +21,6 @@ htmlcov
 .coverage
 .coverage.*
 *,cover
+
+# other
+test.py

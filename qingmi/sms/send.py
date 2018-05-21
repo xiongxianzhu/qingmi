@@ -3,7 +3,7 @@ import re
 import urllib
 import json
 from flask import current_app
-from qingmi.helper import md5
+from qingmi.utils import md5
 
 __all__ = [
     'send_smsbao_sms'
