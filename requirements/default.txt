@@ -4,3 +4,4 @@ mongoengine==0.15.0
 flask-mongoengine==0.9.5
 Pillow==5.1.0
 wheezy.captcha==0.1.44
+Flask-Caching==1.3.3

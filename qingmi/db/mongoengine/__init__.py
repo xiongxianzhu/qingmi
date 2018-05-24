@@ -7,6 +7,7 @@ from flask_mongoengine import (MongoEngine as _MongoEngine,
                                 DynamicDocument as _DynamicDocument)
 from . import pagination
 
+
 class MongoEngine(_MongoEngine):
 
     def __init__(self, app=None, config=None):
@@ -15,9 +16,6 @@ class MongoEngine(_MongoEngine):
         self.Document = Document
         self.DynamicDocument = DynamicDocument
 
-    # @property
-    # def json(self):
-    #     return dict(for key in )
 
 class BaseQuerySet(_BaseQuerySet):
 
