@@ -1,11 +1,8 @@
 # coding: utf-8
 
 from datetime import datetime
-try:
-    from cStringIO import StringIO
-except:
-    from StringIO import StringIO
-from qingmi.base import db, cache
+from io import StringIO
+from ..base import db, cache
 
 
 class Item(db.Document):

@@ -3,10 +3,7 @@
 import os
 import random
 import string
-try:
-    from cStringIO import StringIO
-except:
-    from StringIO import StringIO
+from io import StringIO
 from flask import current_app, session, request, make_response
 from wheezy.captcha import image
 from .settings import FONT_ROOT

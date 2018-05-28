@@ -2,8 +2,11 @@
 from flask import jsonify
 
 
-def success(code=0, msg='SUCCESS', _data=None, **kwargs):
-    res = dict(code=code, msg=msg)
+def success(_data=None, **kwargs):
+    if kwargs.get('__external'):
+        kwargs.setdefault('code', 0)
+        kwargs.setdefault('key', 'SUCCESS')
+    res = dict(code=0, msg='SUCCESS')
     if _data is not None:
         res['data'] = _data
     elif kwargs:

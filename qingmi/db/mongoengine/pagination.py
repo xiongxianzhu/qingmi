@@ -1,7 +1,7 @@
 # coding: utf-8
 from flask import request, url_for, render_template
 from flask_mongoengine.pagination import Pagination as _Pagination
-from ..helper import success
+from qingmi.utils import success
 
 class Pagination(_Pagination):
 
