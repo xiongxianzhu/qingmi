@@ -59,7 +59,7 @@ class Item(db.Document):
     def inc(key, default=0, num=1, name=None):
         """ 整数类型的递增， 步长为num， 默认递增1； 不存在则创建 """
 
-        params = dict(inc__value=num, set__modified=datetime.now())
+        params = dict(inc__value=num, set__updated_at=datetime.now())
         if name:
             params['set__name'] = name
         item = Item.objects(key=key).modify(**params)
