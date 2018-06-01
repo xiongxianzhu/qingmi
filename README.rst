@@ -85,4 +85,5 @@ Qingmi(青咪， 取自 ``情迷`` 谐音， 有 ``亲昵`` 之意)是一个基�
 
 - `celery <https://github.com/celery/celery>`_
 - `requests <https://github.com/requests/requests>`_
-- `django <https://github.com/django/django/>`_
+- `django <https://github.com/django/django>`_
+- `flask-login <https://github.com/maxcountryman/flask-login>`_

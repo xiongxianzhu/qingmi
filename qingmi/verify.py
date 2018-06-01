@@ -6,10 +6,10 @@ import string
 from io import StringIO
 from flask import current_app, session, request, make_response
 from wheezy.captcha import image
-from .settings import FONT_ROOT
+from qingmi.settings import FONT_ROOT
 
 __all__ = [
-
+    'VerifyManager', 'get_varify_code', 'validate_code'
 ]
 
 FONTS = [
@@ -26,7 +26,7 @@ SESSION_KEY_VERIFY = 'verify_codes'
 _keys = set()
 
 # 'A-Z0-9'
-_chars = string.uppercase + string.digits
+_chars = string.ascii_uppercase + string.digits
 # 去掉干扰的字母和数字
 # _chars = 'ABCDEFJHJKLMNPQRSTUVWXY3456789'
 for char in '0oIl1Z2':
