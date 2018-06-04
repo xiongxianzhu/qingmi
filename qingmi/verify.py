@@ -59,14 +59,14 @@ def get_verify_code(key, refresh=False, code_len=4):
     # 默认随机抽取4位字符生成验证码
     code = ''.join(random.sample(_chars, code_len))
     codes = session[SESSION_KEY_VERIFY]
-    if key not in codes or refresh:
+    if key not in codes.keys() or refresh:
         # 将新生成的随机验证码和使用次数根据key添加到session
         codes[key] = dict(
             code=code,
             times=0
         )
     
-    return codes[key]['code'], code[key]['times']
+    return codes[key]['code'], codes[key]['times']
 
 def code2image(code):
     """ 将验证码生成验证码图片 """
@@ -99,4 +99,4 @@ def validate_code(key):
 
     codes = session[SESSION_KEY_VERIFY]
     if key in codes:
-        code[key]['times'] += 1
+        codes[key]['times'] += 1
