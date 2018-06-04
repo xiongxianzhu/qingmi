@@ -25,6 +25,7 @@ class Item(db.Document):
     meta = dict(
         indexes=[
             'key',
+            '-created_at'
         ],
         ordering=['-created_at'],
     )

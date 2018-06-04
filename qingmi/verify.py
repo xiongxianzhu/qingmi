@@ -9,7 +9,7 @@ from wheezy.captcha import image
 from qingmi.settings import FONT_ROOT
 
 __all__ = [
-    'VerifyManager', 'get_varify_code', 'validate_code'
+    'VerifyManager', 'get_verify_code', 'validate_code'
 ]
 
 FONTS = [
@@ -49,7 +49,7 @@ class VerifyManager(object):
             return code2image(code)
 
 
-def get_varify_code(key, refresh=False, code_len=4):
+def get_verify_code(key, refresh=False, code_len=4):
     """ 生成验证码字符串 """
 
     _keys.add(key)
