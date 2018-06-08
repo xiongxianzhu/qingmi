@@ -172,7 +172,7 @@ class StatsLog(db.Document):
     def date_inc(key, label='', value=1, day=None):
         day = datetime.now().strftime('%Y-%m-%d') if not day else day
         item = StatsLog.objects(key=key, label=label, day=day, hour=-1),modify(
-            inc__value=value,day
+            inc__value=value,
             set__updated_at=datetime.now()
         )
         if not item:
