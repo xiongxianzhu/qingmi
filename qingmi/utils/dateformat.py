@@ -4,9 +4,11 @@ from datetime import datetime, date
 
 
 def today():
-    return datetime.strftime(str(date.today()), '%Y-%m-%d')
+    """ 返回datetime.datetime类型的日期， 如datetime.datetime(2018, 6, 8, 0, 0) """
+    return datetime.strptime(str(date.today()), '%Y-%m-%d')
 
 def parse_datetime(input):
+    """ 格式化日期时间 """
     diff = datetime.now() - input
     if diff.days in [0, -1]:
         seconds = diff.days * 86400 + diff.seconds
