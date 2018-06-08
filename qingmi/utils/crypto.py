@@ -30,6 +30,6 @@ def get_phone_verify_code(length=4):
 
 def get_email_verify_code(length=4):
     """ 生成邮箱验证码 """
-    chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' \
             + '0123456789'
     return get_random_string(length, chars)
