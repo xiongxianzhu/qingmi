@@ -150,7 +150,7 @@ class StatsLog(db.Document):
     meta = dict(
         indexes=[
             '-created_at',
-            ('key', 'day', 'hour')
+            ('key', 'day', 'hour'),
             ('key', 'label', 'day', 'hour'),
         ]
     )
