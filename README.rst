@@ -87,3 +87,4 @@ Qingmi(青咪， 取自 ``情迷`` 谐音， 有 ``亲昵`` or ``亲密`` 之意
 - `requests <https://github.com/requests/requests>`_
 - `django <https://github.com/django/django>`_
 - `flask-login <https://github.com/maxcountryman/flask-login>`_
+- `flask-admin <https://github.com/flask-admin/flask-admin>`_
