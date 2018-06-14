@@ -33,3 +33,9 @@ def get_email_verify_code(length=4):
     chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' \
             + '0123456789'
     return get_random_string(length, chars)
+
+def get_session_id(length=48):
+    """ 生成session　id字符串 """
+    chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' \
+            + '0123456789-_'
+    return get_random_string(length, chars)

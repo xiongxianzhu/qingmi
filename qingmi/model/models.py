@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from io import StringIO
-from qingmi.base import db, cache
+from ..base import db, cache
 from qingmi.utils import today
 
 
@@ -32,7 +32,7 @@ class Item(db.Document):
     )
 
     @staticmethod
-    @cache.memoize(timeout=50)
+    # @cache.memoize(timeout=5)
     def get(key, default=0, name='None'):
         """ 获取整数类型的键值， 不存在则创建 """
 
@@ -75,7 +75,7 @@ class Item(db.Document):
             return item.value + num
 
     @staticmethod
-    @cache.memoize(timeout=50)
+    # @cache.memoize(timeout=5)
     def get_text(key, default='', name=None):
         """ 获取字符串类型的键值， 不存在则创建 """
 
