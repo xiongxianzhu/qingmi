@@ -88,3 +88,6 @@ Qingmi(青咪， 取自 ``情迷`` 谐音， 有 ``亲昵`` or ``亲密`` 之意
 - `django <https://github.com/django/django>`_
 - `flask-login <https://github.com/maxcountryman/flask-login>`_
 - `flask-admin <https://github.com/flask-admin/flask-admin>`_
+- `flask-security <https://github.com/mattupstate/flask-security>`_
+- `startbootstrap-sb-admin-2 <https://github.com/blackrockdigital/startbootstrap-sb-admin-2/>`_
+- `sb-admin-2-python <https://github.com/kaushikraj/sb-admin-2-python>`_
