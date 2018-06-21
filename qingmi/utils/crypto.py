@@ -39,3 +39,8 @@ def get_session_id(length=48):
     chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' \
             + '0123456789-_'
     return get_random_string(length, chars)
+
+def get_invite_code(length=6):
+    """ 生成邀请码 """
+    chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+    return get_random_string(length, chars)

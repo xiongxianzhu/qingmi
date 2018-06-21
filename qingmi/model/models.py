@@ -157,6 +157,8 @@ class StatsLog(db.Document):
 
     @staticmethod
     def inc(key, day=lambda: today(), hour=-1, value=1):
+        if callable(day):
+            day = day()
         day = str(day)[:10]
         item = StatsLog.objects(key=key, day=day, hour=hour).modify(
             inc__value=value,
