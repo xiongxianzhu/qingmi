@@ -4,7 +4,27 @@ qingmi
 
 Qingmi(青咪， 取自 ``情迷`` 谐音， 有 ``亲昵`` or ``亲密`` 之意)是一个基于Python3+Flask二次开发的应用层框架， 其内部封装了常用的模块和工具集， 主要用于针对flask web快速高效开发。
 
-采用的技术栈：
+安装
+====
+
+pypi安装
+--------
+::
+
+    pip install qingmi
+
+源码安装
+-------
+python的版本需求为 ``Python3+``， 推荐 ``python3.6.5`` ：
+
+::
+
+    git clone https://github.com/xiongxianzhu/qingmi.git
+    cd qingmi
+    python setup.py install
+
+采用的技术栈
+==========
 
 - python3
 - flask
@@ -29,7 +49,8 @@ Qingmi(青咪， 取自 ``情迷`` 谐音， 有 ``亲昵`` or ``亲密`` 之意
 - click
 - wheezy.captcha
 
-功能特性：
+功能特性
+=======
 
 - 管理后台-admin
 - 数据统计-stats
