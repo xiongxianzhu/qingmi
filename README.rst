@@ -52,7 +52,7 @@ python的版本需求为 ``Python3+``， 推荐 ``python3.6.5`` ：
 功能特性
 =======
 
-- 管理后台-admin
+- 管理后台-admin(flask-admin+sb-admin-2)
 - 数据统计-stats
 - 短信模块-sms
 - 邮件发送-email
