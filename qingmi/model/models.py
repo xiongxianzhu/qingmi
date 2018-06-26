@@ -1,7 +1,6 @@
 # coding: utf-8
 
 from datetime import datetime
-from io import StringIO
 from ..base import db, cache
 from qingmi.utils import today
 
