@@ -155,6 +155,82 @@ class StatsLog(db.Document):
     )
 
     @staticmethod
+    def get(key, value=0, day=lambda: today(), hour=-1, save=True):
+        if callable(day):
+            day = day()
+        day = str(day)[:10]
+        item = StatsLog.objects(key=key, day=day, hour=hour).first()
+        if item:
+            return item.value
+        if save:
+            StatsLog(key=key, day=day, hour=hour, value=value).save()
+            return value
+        return None
+
+    @staticmethod
+    def xget(key, value=0, day=None, hour=-1, save=True):
+        day = str(day)[:10] if day else day
+        item = StatsLog.objects(key=key, day=day, hour=hour).first()
+        if item:
+            return item.value
+        if save:
+            StatsLog(key=key, day=day, hour=hour, value=value).save()
+            return value
+        return None
+
+    @staticmethod
+    def get_bool(key, value=False, day=lambda: today(), hour=-1, save=True):
+        value = StatsLog.get(key, 1 if value else 0, day, hour, save)
+        if value is None:
+            return None
+        return True if value else False
+
+    @staticmethod
+    def xget_bool(key, value=False, day=None, hour=-1, save=True):
+        value = StatsLog.xget(key, 1 if value else 0, day, hour, save)
+        if value is None:
+            return None
+        return True if value else False
+
+    @staticmethod
+    def set_bool(key, value=False, day=lambda: today(), hour=-1, save=True):
+        """ 设置value为bool型的值， 且日期为字符串为datetime.datetime类型， 默认当天 """
+        if callable(day):
+            day = day()
+        day = str(day)[:10]
+        value = 1 if value else 0
+        item = StatsLog.objects(key=key, day=day, hour=hour).modify(
+            set__value=value,
+            set__day=day,
+            set__hour=hour,
+            set__updated_at=datetime.now(),
+        )
+        if item:
+            return value
+        if save:
+            StatsLog(key=key, value=value, day=day, hour=hour).save()
+            return value
+        return None
+
+    @staticmethod
+    def xset_bool(key, value=False, day=None, hour=-1, save=True):
+        """ 设置value为bool型的值， 且日期为字符串为datetime.datetime类型, 默认None """
+        day = str(day)[:10] if day else day
+        value = 1 if value else 0
+        item = StatsLog.objects(key=key, day=day, hour=hour).modify(
+            set__value=value,
+            set__day=day,
+            set__hour=hour,
+            set__updated_at=datetime.now(),
+        )
+        if item:
+            return value
+        if save:
+            StatsLog(key=key, value=value, day=day, hour=hour).save()
+            return value
+        return None
+
+    @staticmethod
     def inc(key, day=lambda: today(), hour=-1, value=1):
         if callable(day):
             day = day()
