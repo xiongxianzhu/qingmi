@@ -75,7 +75,7 @@ class Item(db.Document):
 
     @staticmethod
     # @cache.memoize(timeout=5)
-    def get_text(key, default='', name=None):
+    def text(key, default='', name=None):
         """ 获取字符串类型的键值， 不存在则创建 """
 
         item = Item.objects(key=key).first()
@@ -100,15 +100,15 @@ class Item(db.Document):
 
     @staticmethod
     def choice(key, value='', name=None, sep='|', coerce=str):
-        return coerce(random.choice(Item.get_text(key, value, name).split(sep)))
+        return coerce(random.choice(Item.text(key, value, name).split(sep)))
 
     @staticmethod
     def list(key, value='', name=None, sep='|', coerce=int):
-        return [coerce(x) for x in Item.get_text(key, value, name).split(sep)]
+        return [coerce(x) for x in Item.text(key, value, name).split(sep)]
 
     @staticmethod
     def group(key, value='', name=None, sep='|', sub='-', coerce=int):
-        texts = Item.get_text(key, value, name).split(sep)
+        texts = Item.text(key, value, name).split(sep)
         return [[coerce(y) for y in x.split(sub)] for x in texts]
 
     @staticmethod
@@ -121,13 +121,13 @@ class Item(db.Document):
 
     @staticmethod
     def bool(key, value=True, name=None):
-        value = Item.get_text(key, 'true' if value else 'false', name)
+        value = Item.text(key, 'true' if value else 'false', name)
         return True if value in ['true', 'True'] else False
 
     @staticmethod
     def time(key, value='', name=None):
         mat = "%Y-%m-%d %H:%M:%S"
-        value = Item.get_text(key, datetime.now().strftime(mat), name)
+        value = Item.text(key, datetime.now().strftime(mat), name)
         try:
             value = datetime.strptime(value, mat)
         except:
