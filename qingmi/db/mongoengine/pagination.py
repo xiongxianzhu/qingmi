@@ -1,5 +1,5 @@
 # coding: utf-8
-from flask import request, url_for, render_template
+from flask import abort, request, url_for, render_template
 from flask_mongoengine.pagination import Pagination as _Pagination
 from qingmi.utils import success
 
@@ -7,6 +7,8 @@ class Pagination(_Pagination):
 
     def __init__(self, iterable, page=None, per_page=None,
                     endpoint=None, **kwargs):
+        if page < 1:
+            abort(404)
         page = page or max(1, request.args.get('page', 1, int))
         per_page = per_page or max(1, min(100,
                     request.args.get('per_page', 10, int)))
