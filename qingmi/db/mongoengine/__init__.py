@@ -11,7 +11,7 @@ class Chocies(object):
 
     def __init__(self, **kwargs):
         self.CHOICES = []
-        for key, value in kwargs.iteritems():
+        for key, value in kwargs.items():
             self.CHOICES.append((key, value))
             setattr(self, key.upper(), key)
         self.DICT = dict(self.CHOICES)
