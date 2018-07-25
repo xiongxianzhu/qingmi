@@ -156,6 +156,7 @@ class StatsLog(db.Document):
 
     @staticmethod
     def get(key, value=0, day=lambda: today(), hour=-1, save=True):
+        """ 取值， 其中day是函数 """
         if callable(day):
             day = day()
         day = str(day)[:10]
@@ -169,6 +170,7 @@ class StatsLog(db.Document):
 
     @staticmethod
     def xget(key, value=0, day=None, hour=-1, save=True):
+        """ 取值， 其中day为日期或时间的字符串或datetime.datetime实例 """
         day = str(day)[:10] if day else day
         item = StatsLog.objects(key=key, day=day, hour=hour).first()
         if item:
