@@ -1,11 +1,24 @@
 # coding: utf-8
-from __future__ import unicode_literals
 
 from flask_mongoengine import (MongoEngine as _MongoEngine,
                                 BaseQuerySet as _BaseQuerySet,
                                 Document as _Document,
                                 DynamicDocument as _DynamicDocument)
 from . import pagination
+
+
+class Chocies(object):
+
+    def __init__(self, **kwargs):
+        self.CHOICES = []
+        for key, value in kwargs.iteritems():
+            self.CHOICES.append((key, value))
+            setattr(self, key.upper(), key)
+        self.DICT = dict(self.CHOICES)
+        self.VALUES = self.DICT.keys()
+
+    def text(self, key):
+        return self.DICT.get(key)
 
 
 class MongoEngine(_MongoEngine):
@@ -15,6 +28,9 @@ class MongoEngine(_MongoEngine):
 
         self.Document = Document
         self.DynamicDocument = DynamicDocument
+
+    def choices(self, **kwargs):
+        return Chocies(**kwargs)
 
 
 class BaseQuerySet(_BaseQuerySet):
