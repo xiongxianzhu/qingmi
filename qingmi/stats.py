@@ -49,7 +49,7 @@ class Stats(object):
                 upsert=True,
             )
 
-    def save(self， key, value, day, start, end, hour=0, field='updated_at', **kwargs):
+    def save(self， key, value, day, start, end, hour=0, field='created_at', **kwargs):
         if field is not None:
             kwargs.setdefault('%s__gte' % field, start)
             kwargs.setdefault('%s__lt' % field, end)
@@ -73,20 +73,44 @@ class Stats(object):
     def distinct(self, key, model, sub, **kwargs):
         self.stats(key, model, query=lambda x: x.distinct(sub), handle=len, **kwargs)
 
-    def aggregate(self):
-        pass
+    def aggregate(self, key, model, *pipline, **kwargs):
+        self.stat(key, model, query=lambda x: list(x.aggregate(*pipline)), **kwargs)
+
+    def aggregate2(self, key, model, model2, sub, *pipline, **kwargs):
+        handle = lambda x: list(model.objects(id__in=x).aggregate(*pipline))
+        query = lambda x: x.distinct(sub)
+        self.stats(key, model2, query=query, handle=handle, **kwargs)
 
     def func(self, f):
         self.funcs.append(f)
 
     def one(self, key, day, start, end, hour=0):
-        pass
+        for item in self.items:
+            value = lambda **x: item['handle'](item['query'](item['model'].objects(**x)))
+            self.save('%s_%s' % (key, item['key']), value, day, start, end, hour, **item['kwargs'])
+        for f in self.funcs:
+            f(key, day, start, end, hour)
+
+    def day(self, day):
+        start = datetime.strptime(str(day).split(' ')[0], '%Y-%m-%d')
+        end = datetime.strptime(str(day + timedelta(days=1)).split(' ')[0], '%Y-%m-%d')
+        self.one('date', day.strftime('%Y-%m-%d'), start, end)
 
     def hour(self, now, day=True):
-        pass
+        start = now - timedelta(minutes=self.minutes)
+        start = start - timedelta(minutes=start.minute, seconds=start.second,
+                                    microseconds=start.microsecond)
+        end = start + timedelta(hours=1)
+        seld.one('hour', start.strftime('%Y-%m-%d'), start, end, hour=start.hour)
+        if day:
+            self.day(start)
 
     def all(self):
-        pass
+        now = datetime.now()
+        while now >= self.start:
+            print('stats:', now)
+            self.hour(now, day=now.hour == 0)
+            now -= timedelta(hours=1)
 
     def run(self, start=datetime(2018, 1, 1), minutes=1):
         self.start = start
