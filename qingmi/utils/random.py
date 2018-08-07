@@ -1,5 +1,7 @@
 # coding: utf-8
 
+import random
+
 def random_index(rate):
     """ 随机变量的概率函数 """
     #
