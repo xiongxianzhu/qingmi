@@ -8,8 +8,10 @@ from qingmi.utils import today
 class Item(db.Document):
     """ 选项 """
 
-    TYPE_INT = 'int'
-    TYPE_STRING = 'string'
+    MENU_ICON = 'gear'
+
+    TYPE_INT = 'INT'
+    TYPE_STRING = 'STRING'
     TYPE_CHOICES = (
         (TYPE_INT, '整数'),
         (TYPE_STRING, '字符串'),
@@ -137,8 +139,11 @@ class Item(db.Document):
 
 class StatsLog(db.Document):
     """ 统计日志 """
+
+    MENU_ICON = 'bar-chart'
     
     key = db.StringField(verbose_name='键名')
+    uid = db.StringField(verbose_name='UID')
     label = db.StringField(verbose_name='标签')
     day = db.StringField(verbose_name='日期')
     hour = db.IntField(default=0, verbose_name='小时')
@@ -149,59 +154,37 @@ class StatsLog(db.Document):
     meta = dict(
         indexes=[
             '-created_at',
-            ('key', 'day', 'hour'),
-            ('key', 'label', 'day', 'hour'),
+            ('key', 'uid', 'label', 'day', 'hour'),
         ]
     )
 
     @staticmethod
-    def get(key, value=0, day=lambda: today(), hour=-1, save=True):
-        """ 取值， 其中day是函数 """
+    def get(key, uid='', label='', day=lambda: today(), hour=-1, value=0, save=True):
+        """ 取值 """
+        # 
+        # 日期默认今天
+        # 
         if callable(day):
             day = day()
         day = str(day)[:10]
-        item = StatsLog.objects(key=key, day=day, hour=hour).first()
+        item = StatsLog.objects(key=key, uid=uid, label=label, day=day, hour=hour).first()
         if item:
             return item.value
         if save:
-            StatsLog(key=key, day=day, hour=hour, value=value).save()
+            StatsLog(key=key, uid=uid, label=label, day=day, hour=hour, value=value).save()
             return value
-        return None
+        return None     # 当save为False才有可能返回None
 
     @staticmethod
-    def xget(key, value=0, day=None, hour=-1, save=True):
-        """ 取值， 其中day为日期或时间的字符串或datetime.datetime实例 """
-        day = str(day)[:10] if day else day
-        item = StatsLog.objects(key=key, day=day, hour=hour).first()
-        if item:
-            return item.value
-        if save:
-            StatsLog(key=key, day=day, hour=hour, value=value).save()
-            return value
-        return None
-
-    @staticmethod
-    def get_bool(key, value=False, day=lambda: today(), hour=-1, save=True):
-        value = StatsLog.get(key, 1 if value else 0, day, hour, save)
-        if value is None:
-            return None
-        return True if value else False
-
-    @staticmethod
-    def xget_bool(key, value=False, day=None, hour=-1, save=True):
-        value = StatsLog.xget(key, 1 if value else 0, day, hour, save)
-        if value is None:
-            return None
-        return True if value else False
-
-    @staticmethod
-    def set_bool(key, value=False, day=lambda: today(), hour=-1, save=True):
-        """ 设置value为bool型的值， 且日期为字符串为datetime.datetime类型， 默认当天 """
+    def set(key, uid='', label='', day=lambda: today(), hour=-1, value=0, save=True):
+        """ 设置值 """
+        # 
+        # 日期默认今天
+        # 
         if callable(day):
             day = day()
         day = str(day)[:10]
-        value = 1 if value else 0
-        item = StatsLog.objects(key=key, day=day, hour=hour).modify(
+        item = StatsLog.objects(key=key, uid=uid, label='', day=day, hour=hour).modify(
             set__value=value,
             set__day=day,
             set__hour=hour,
@@ -210,69 +193,94 @@ class StatsLog(db.Document):
         if item:
             return value
         if save:
-            StatsLog(key=key, value=value, day=day, hour=hour).save()
+            StatsLog(key=key, uid=uid, label='', day=day, hour=hour, value=value).save()
             return value
         return None
 
     @staticmethod
-    def xset_bool(key, value=False, day=None, hour=-1, save=True):
-        """ 设置value为bool型的值， 且日期为字符串为datetime.datetime类型, 默认None """
-        day = str(day)[:10] if day else day
-        value = 1 if value else 0
-        item = StatsLog.objects(key=key, day=day, hour=hour).modify(
-            set__value=value,
-            set__day=day,
-            set__hour=hour,
-            set__updated_at=datetime.now(),
-        )
-        if item:
-            return value
-        if save:
-            StatsLog(key=key, value=value, day=day, hour=hour).save()
-            return value
-        return None
-
-    @staticmethod
-    def inc(key, day=lambda: today(), hour=-1, value=1):
+    def inc(key, uid='', label='', day=lambda: today(), hour=-1, value=1, save=True):
+        """ 递增 """
+        # 
+        # 日期默认今天
+        # 
         if callable(day):
             day = day()
         day = str(day)[:10]
-        item = StatsLog.objects(key=key, day=day, hour=hour).modify(
+        item = StatsLog.objects(key=key, uid=uid, label='', day=day, hour=hour).modify(
             inc__value=value,
             set__updated_at=datetime.now()
         )
-        if not item:
-            StatsLog(key=key, day=day, hour=hour, value=value).save()
-            return value
-        else:
+        if item:
             return item.value + value
-
-    @staticmethod
-    def date_inc(key, label='', value=1, day=None):
-        day = datetime.now().strftime('%Y-%m-%d') if not day else day
-        item = StatsLog.objects(key=key, label=label, day=day, hour=-1),modify(
-            inc__value=value,
-            set__updated_at=datetime.now()
-        )
-        if not item:
-            StatsLog(key=key, label=label, day=day, hour=-1, value=value).save()
+        if save:
+            StatsLog(key=key, uid=uid, label='', day=day, hour=hour, value=value).save()
             return value
-        else:
-            return item.value + value
+        return None
+            
 
     @staticmethod
-    def date_get(key, label='', day=None):
-        day = datetime.strftime('%Y-%m-%d') if not day else day
-        item = StatsLog.objects(key=key, label=label, day=day, hour=-1).first()
-        return item.value if item else 0
+    def xget(key, uid='', label='', day='', hour=-1, value=0, save=True):
+        """ 取值 """
+        # 
+        # 日期默认全局
+        # 
+        return StatsLog.get(key, uid, label, day, hour, value, save)
 
     @staticmethod
-    def date_set(key, label='', value=1, day=None):
-        day = datetime.strftime('%Y-%m-%d') if not day else day
-        item = StatsLog.objects(key=key, label=label, day=day, hour=-1).modify(
-            value=value,
-            set__updated_at=datetime.now()
-        )
-        if not item:
-            StatsLog(key=key, label=label, day=day, hour=-1, value=value).save()
-        return value
+    def xset(key, uid='', label='', day='', hour=-1, value=0, save=True):
+        """ 设置值 """
+        # 
+        # 日期默认全局
+        # 
+        return StatsLog.set(key, uid, label, day, hour, value, save)
+
+    @staticmethod
+    def xinc(key, uid='', label='', day='', hour=-1, value=1, save=True):
+        """ 递增 """
+        # 
+        # 日期默认全局
+        # 
+        return StatsLog.inc(key, uid, label, day, hour, value, save)
+
+    @staticmethod
+    def get_bool(key, uid='', label='', day=lambda: today(), hour=-1, value=False, save=True):
+        """ 取布尔值 """
+        # 
+        # 日期默认今天
+        # 
+        value = StatsLog.get(key, uid, label, day, hour, 1 if value else 0, save)
+        if value is None:
+            return None
+        if value is 1:
+            return True
+        return False
+
+    @staticmethod
+    def set_bool(key, uid='', label='', day=lambda: today(), hour=-1, value=False, save=True):
+        """ 设置布尔值 """
+        # 
+        # 日期默认今天
+        # 
+        value = StatsLog.set(key, uid, label, day, hour, 1 if value else 0, save)
+        if value is None:
+            return None
+        if value is 1:
+            return True
+        return False
+
+    @staticmethod
+    def xget_bool(key, uid='', label='', day='', hour=-1, value=False, save=True):
+        """ 取布尔值 """
+        # 
+        # 日期默认全局
+        # 
+        return StatsLog.get_bool(key, uid, label, day, hour, value, save)
+        
+
+    @staticmethod
+    def xset_bool(key, uid='', label='', day='', hour=-1, value=False, save=True):
+        """ 设置布尔值 """
+        # 
+        # 日期默认全局
+        # 
+        return StatsLog.set_bool(key, uid, label, day, hour, value, save)
