@@ -184,7 +184,7 @@ class StatsLog(db.Document):
         if callable(day):
             day = day()
         day = str(day)[:10]
-        item = StatsLog.objects(key=key, uid=uid, label='', day=day, hour=hour).modify(
+        item = StatsLog.objects(key=key, uid=uid, label=label, day=day, hour=hour).modify(
             set__value=value,
             set__day=day,
             set__hour=hour,
@@ -193,7 +193,7 @@ class StatsLog(db.Document):
         if item:
             return value
         if save:
-            StatsLog(key=key, uid=uid, label='', day=day, hour=hour, value=value).save()
+            StatsLog(key=key, uid=uid, label=label, day=day, hour=hour, value=value).save()
             return value
         return None
 
@@ -206,14 +206,14 @@ class StatsLog(db.Document):
         if callable(day):
             day = day()
         day = str(day)[:10]
-        item = StatsLog.objects(key=key, uid=uid, label='', day=day, hour=hour).modify(
+        item = StatsLog.objects(key=key, uid=uid, label=label, day=day, hour=hour).modify(
             inc__value=value,
             set__updated_at=datetime.now()
         )
         if item:
             return item.value + value
         if save:
-            StatsLog(key=key, uid=uid, label='', day=day, hour=hour, value=value).save()
+            StatsLog(key=key, uid=uid, label=label, day=day, hour=hour, value=value).save()
             return value
         return None
             
