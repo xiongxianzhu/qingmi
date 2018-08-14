@@ -25,6 +25,7 @@ class MongoEngine(_MongoEngine):
 
     def __init__(self, app=None, config=None):
         super(MongoEngine, self).__init__(app)
+        # _include_custom(self)
 
         self.Document = Document
         self.DynamicDocument = DynamicDocument
@@ -49,3 +50,12 @@ class DynamicDocument(_DynamicDocument):
 
     meta = {'abstract': True,
             'queryset_class': BaseQuerySet}
+
+def abstract(model):
+    model._meta['abstract'] = True
+
+def _include_custom(obj):
+    for key in fields.__all__:
+        if not hasattr(obj, key):
+            setattr(obj, key, getattr(fields, key))
+    setattr(obj, 'abstract', abstract)
