@@ -7,7 +7,7 @@ from flask_mongoengine import (MongoEngine as _MongoEngine,
 from . import pagination
 
 
-class Chocies(object):
+class Choices(object):
 
     def __init__(self, **kwargs):
         self.CHOICES = []
@@ -31,7 +31,7 @@ class MongoEngine(_MongoEngine):
         self.DynamicDocument = DynamicDocument
 
     def choices(self, **kwargs):
-        return Chocies(**kwargs)
+        return Choices(**kwargs)
 
 
 class BaseQuerySet(_BaseQuerySet):

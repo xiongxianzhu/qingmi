@@ -65,9 +65,12 @@ class Stats(object):
         ))
 
     def count(self, key, model, **kwargs):
+        """ 计数 """
         self.stats(key, model, **kwargs)
 
     def sum(self, key, model, sub, **kwargs):
+        """ 求和 """
+        # lambda x中的x为queryset
         self.stats(key, model, query=lambda x: x.aggregate_sum(sub), **kwargs)
 
     def distinct(self, key, model, sub, **kwargs):
