@@ -145,132 +145,133 @@ class Item(db.Document):
         return value
 
 
+# class StatsLog(db.Document):
+#     """ 统计日志 """
+#     MENU_ICON = 'bar-chart'
+    
+#     key = db.StringField(verbose_name='键名')
+#     uid = db.StringField(verbose_name='用户ID')
+#     xid = db.StringField(verbose_name='其他ID')
+#     label = db.StringField(verbose_name='标签')
+#     day = db.StringField(verbose_name='日期')
+#     hour = db.IntField(default=0, verbose_name='小时')
+#     value = db.IntField(default=0, verbose_name='结果')
+#     created_at = db.DateTimeField(default=datetime.now, verbose_name='创建时间')
+#     updated_at = db.DateTimeField(default=datetime.now, verbose_name='更新时间')
+
+#     meta = dict(
+#         indexes=[
+#             '-created_at',
+#             ('key', 'day', 'hour'),
+#             ('key', 'uid', 'xid', 'label', 'day', 'hour'),
+#         ],
+#         ordering=['-created_at'],
+#     )
+
+#     @staticmethod
+#     def get(key, uid='', xid='', label='', day=lambda: today(), hour=-1, value=0, save=True):
+#         """ 取值 """
+#         if callable(day):
+#             day = day()
+#         day = str(day)[:10]
+#         item = StatsLog.objects(key=key, uid=uid, xid=xid, label=label, day=day, hour=hour).first()
+#         if item:
+#             return item.value
+#         if save:
+#             StatsLog(key=key, uid=uid, xid=xid, label=label, day=day, hour=hour, value=value).save()
+#             return value
+#         return None
+
+#     @staticmethod
+#     def set(key, uid='', xid='', label='', day=lambda: today(), hour=-1, value=0, save=True):
+#         """ 设置值 """
+#         if callable(day):
+#             day = day()
+#         day = str(day)[:10]
+#         item = StatsLog.objects(key=key, uid=uid, xid=xid, label=label, day=day, hour=hour).modify(
+#             set__value=value,
+#             set__updated_at=datetime.now(),
+#         )
+#         if item:
+#             return value
+#         if save:
+#             StatsLog(key=key, uid=uid, xid=xid, label=label, day=day, hour=hour, value=value).save()
+#             return value
+#         return None
+
+#     @staticmethod
+#     def inc(key, uid='', xid='', label='', day=lambda: today(), hour=-1, start=0, value=1, save=True):
+#         """ 递增 """
+#         if callable(day):
+#             day = day()
+#         day = str(day)[:10]
+#         item = StatsLog.objects(key=key, uid=uid, xid=xid, label=label, day=day, hour=hour).modify(
+#             inc__value=value,
+#             set__updated_at=datetime.now()
+#         )
+#         if item:
+#             return item.value + value
+#         if save:
+#             StatsLog(key=key, uid=uid, xid=xid, label=label, day=day, hour=hour, value=start+value).save()
+#             return start+value
+#         return None
+
+#     @staticmethod
+#     def xget(key, uid='', xid='', label='', day='', hour=-1, value=0, save=True):
+#         """ 取值 """
+#         return StatsLog.get(key, uid, xid, label, day, hour, value, save)
+
+#     @staticmethod
+#     def xset(key, uid='', xid='', label='', day='', hour=-1, value=0, save=True):
+#         """ 设置值 """
+#         return StatsLog.set(key, uid, xid, label, day, hour, value, save)
+
+#     @staticmethod
+#     def xinc(key, uid='', xid='', label='', day='', hour=-1, start=0, value=1, save=True):
+#         """ 递增 """
+#         return StatsLog.inc(key, uid, xid, label, day, hour, start, value, save)
+
+#     @staticmethod
+#     def get_bool(key, uid='', xid='', label='', day=lambda: today(), hour=-1, value=False, save=True):
+#         """ 取布尔值 """
+#         value = StatsLog.get(key, uid, xid, label, day, hour, 1 if value else 0, save)
+#         if value is None:
+#             return None
+#         if value is 1:
+#             return True
+#         return False
+
+#     @staticmethod
+#     def set_bool(key, uid='', xid='', label='', day=lambda: today(), hour=-1, value=False, save=True):
+#         """ 设置布尔值 """
+#         value = StatsLog.set(key, uid, xid, label, day, hour, 1 if value else 0, save)
+#         if value is None:
+#             return None
+#         if value is 1:
+#             return True
+#         return False
+
+#     @staticmethod
+#     def xget_bool(key, uid='', xid='', label='', day='', hour=-1, value=False, save=True):
+#         """ 取布尔值 """
+#         return StatsLog.get_bool(key, uid, xid, label, day, hour, value, save)
+        
+#     @staticmethod
+#     def xset_bool(key, uid='', xid='', label='', day='', hour=-1, value=False, save=True):
+#         """ 设置布尔值 """
+#         return StatsLog.set_bool(key, uid, xid, label, day, hour, value, save)
+
+
 class StatsLog(db.Document):
     """ 统计日志 """
     MENU_ICON = 'bar-chart'
-    
-    key = db.StringField(verbose_name='键名')
-    uid = db.StringField(verbose_name='用户ID')
-    oid = db.StringField(verbose_name='其他ID')
-    label = db.StringField(verbose_name='标签')
-    day = db.StringField(verbose_name='日期')
-    hour = db.IntField(default=0, verbose_name='小时')
-    value = db.IntField(default=0, verbose_name='结果')
-    created_at = db.DateTimeField(default=datetime.now, verbose_name='创建时间')
-    updated_at = db.DateTimeField(default=datetime.now, verbose_name='更新时间')
-
-    meta = dict(
-        indexes=[
-            '-created_at',
-            ('key', 'day', 'hour'),
-            ('key', 'uid', 'oid', 'label', 'day', 'hour'),
-        ]
-    )
-
-    @staticmethod
-    def get(key, uid='', oid='', label='', day=lambda: today(), hour=-1, value=0, save=True):
-        """ 取值 """
-        if callable(day):
-            day = day()
-        day = str(day)[:10]
-        item = StatsLog.objects(key=key, uid=uid, oid=oid, label=label, day=day, hour=hour).first()
-        if item:
-            return item.value
-        if save:
-            StatsLog(key=key, uid=uid, oid=oid, label=label, day=day, hour=hour, value=value).save()
-            return value
-        return None
-
-    @staticmethod
-    def set(key, uid='', oid='', label='', day=lambda: today(), hour=-1, value=0, save=True):
-        """ 设置值 """
-        if callable(day):
-            day = day()
-        day = str(day)[:10]
-        item = StatsLog.objects(key=key, uid=uid, oid=oid, label=label, day=day, hour=hour).modify(
-            set__value=value,
-            set__updated_at=datetime.now(),
-        )
-        if item:
-            return value
-        if save:
-            StatsLog(key=key, uid=uid, oid=oid, label=label, day=day, hour=hour, value=value).save()
-            return value
-        return None
-
-    @staticmethod
-    def inc(key, uid='', oid='', label='', day=lambda: today(), hour=-1, start=0, value=1, save=True):
-        """ 递增 """
-        if callable(day):
-            day = day()
-        day = str(day)[:10]
-        item = StatsLog.objects(key=key, uid=uid, oid=oid, label=label, day=day, hour=hour).modify(
-            inc__value=value,
-            set__updated_at=datetime.now()
-        )
-        if item:
-            return item.value + value
-        if save:
-            StatsLog(key=key, uid=uid, oid=oid, label=label, day=day, hour=hour, value=start+value).save()
-            return start+value
-        return None
-
-    @staticmethod
-    def xget(key, uid='', oid='', label='', day='', hour=-1, value=0, save=True):
-        """ 取值 """
-        return StatsLog.get(key, uid, oid, label, day, hour, value, save)
-
-    @staticmethod
-    def xset(key, uid='', oid='', label='', day='', hour=-1, value=0, save=True):
-        """ 设置值 """
-        return StatsLog.set(key, uid, oid, label, day, hour, value, save)
-
-    @staticmethod
-    def xinc(key, uid='', oid='', label='', day='', hour=-1, start=0, value=1, save=True):
-        """ 递增 """
-        return StatsLog.inc(key, uid, oid, label, day, hour, start, value, save)
-
-    @staticmethod
-    def get_bool(key, uid='', oid='', label='', day=lambda: today(), hour=-1, value=False, save=True):
-        """ 取布尔值 """
-        value = StatsLog.get(key, uid, oid, label, day, hour, 1 if value else 0, save)
-        if value is None:
-            return None
-        if value is 1:
-            return True
-        return False
-
-    @staticmethod
-    def set_bool(key, uid='', oid='', label='', day=lambda: today(), hour=-1, value=False, save=True):
-        """ 设置布尔值 """
-        value = StatsLog.set(key, uid, oid, label, day, hour, 1 if value else 0, save)
-        if value is None:
-            return None
-        if value is 1:
-            return True
-        return False
-
-    @staticmethod
-    def xget_bool(key, uid='', oid='', label='', day='', hour=-1, value=False, save=True):
-        """ 取布尔值 """
-        return StatsLog.get_bool(key, uid, oid, label, day, hour, value, save)
-        
-    @staticmethod
-    def xset_bool(key, uid='', oid='', label='', day='', hour=-1, value=False, save=True):
-        """ 设置布尔值 """
-        return StatsLog.set_bool(key, uid, oid, label, day, hour, value, save)
-
-
-class Log(db.Document):
-    """ 日志 """
-    MENU_ICON = 'gears'
 
     TYPE = db.choices(INT='整数', FLOAT='浮点数', STRING='字符串', BOOLEAN='布尔值')
 
     name = db.StringField(max_length=40, verbose_name='名称')
     key = db.StringField(verbose_name='键名')
     uid = db.StringField(verbose_name='用户ID')
-    oid = db.StringField(verbose_name='其他ID')
+    xid = db.StringField(verbose_name='其他ID')
     _type = db.StringField(default=TYPE.INT, choices=TYPE.CHOICES, verbose_name='类型')
     label = db.StringField(verbose_name='标签')
     day = db.StringField(verbose_name='日期')
@@ -283,87 +284,101 @@ class Log(db.Document):
         indexes=[
             'key',
             '-created_at',
-            ('key', 'uid', 'oid', 'label', 'day', 'hour'),
+            '-updated_at',
+            ('key', 'uid'),
+            ('key', 'day', 'hour'),
+            ('key', 'uid', 'xid', 'label', 'day', 'hour'),
         ],
         ordering=['-created_at'],
     )
 
     @staticmethod
-    def get(key, uid='', oid='', label='', day=lambda: today(), hour=-1, value=0, name=None, save=True):
+    def get(key, uid='', xid='', label='', day=lambda: today(),
+            hour=-1, value=0, name=None, save=True):
         """ 取值(整型/浮点型) """
         if callable(day):
             day = day()
         day = str(day)[:10]
-        item = Log.objects(key=key, uid=uid, oid=oid, label=label, day=day, hour=hour).first()
+        item = StatsLog.objects(key=key, uid=uid, xid=xid, label=label, day=day, hour=hour).first()
         if item:
             if name:
                 item.name = name
                 item.save()
             return item.value
         if save:
-            date_type = Log.TYPE.FLOAT if type(value) is float else Log.TYPE.INT
-            Log(key=key, _type=date_type, uid=uid, oid=oid, label=label, day=day,
+            date_type = StatsLog.TYPE.FLOAT if type(value) is float else StatsLog.TYPE.INT
+            StatsLog(key=key, _type=date_type, uid=uid, xid=xid, label=label, day=day,
                     hour=hour, value=value, name=name).save()
             return value
         return None
 
     @staticmethod
-    def set(key, uid='', oid='', label='', day=lambda: today(), hour=-1, value=0, name=None, save=True):
+    def set(key, uid='', xid='', label='', day=lambda: today(),
+            hour=-1, value=0, name=None, save=True):
         """ 设置值(整型/浮点型) """
         if callable(day):
             day = day()
         day = str(day)[:10]
 
-        date_type = Log.TYPE.FLOAT if type(value) is float else Log.TYPE.INT
+        date_type = StatsLog.TYPE.FLOAT if type(value) is float else StatsLog.TYPE.INT
         params = dict(set__value=value, set___type=date_type, set__updated_at=datetime.now())
         if name:
             params['set__name'] = name
-        item = Log.objects(key=key, uid=uid, oid=oid, label=label, day=day, hour=hour).modify(**params)
+        item = StatsLog.objects(key=key, uid=uid, xid=xid, label=label,
+                    day=day, hour=hour).modify(**params)
         if item:
             return value
         if save:
-            Log(key=key, _type=date_type, uid=uid, oid=oid, label=label, day=day, hour=hour, value=value, name=name).save()
+            StatsLog(key=key, _type=date_type, uid=uid, xid=xid, label=label,
+                day=day, hour=hour, value=value, name=name).save()
             return value
         return None
 
     @staticmethod
-    def inc(key, uid='', oid='', label='', day=lambda: today(), hour=-1, start=0, value=1, name=None, save=True):
+    def inc(key, uid='', xid='', label='', day=lambda: today(),
+            hour=-1, start=0, value=1, name=None, save=True):
         """ 递增(整型/浮点型) """
         if callable(day):
             day = day()
         day = str(day)[:10]
 
-        date_type = Log.TYPE.FLOAT if type(value) is float else Log.TYPE.INT
+        date_type = StatsLog.TYPE.FLOAT if type(value) is float else StatsLog.TYPE.INT
         params = dict(inc__value=value, set___type=date_type, set__updated_at=datetime.now())
         if name:
             params['set__name'] = name
-        item = Log.objects(key=key, uid=uid, oid=oid, label=label, day=day, hour=hour).modify(**params)
+        item = StatsLog.objects(key=key, uid=uid, xid=xid, label=label,
+                            day=day, hour=hour).modify(**params)
         if item:
             return item.value + value
         if save:
-            Log(key=key, _type=date_type, uid=uid, oid=oid, label=label, day=day, hour=hour, value=start+value, name=name).save()
+            StatsLog(key=key, _type=date_type, uid=uid, xid=xid, label=label,
+                day=day, hour=hour, value=start+value, name=name).save()
             return start+value
         return None
 
     @staticmethod
-    def text(key, uid='', oid='', label='', day=lambda: today(), hour=-1, value='', name=None, save=True):
+    def text(key, uid='', xid='', label='', day=lambda: today(),
+            hour=-1, value='', name=None, save=True):
         """ 取值(字符串) """
         if callable(day):
             day = day()
         day = str(day)[:10]
-        item = Log.objects(key=key, uid=uid, oid=oid, label=label, day=day, hour=hour).first()
+        item = StatsLog.objects(key=key, uid=uid, xid=xid, label=label,
+                            day=day, hour=hour).first()
         if item:
             if name:
                 item.name = name
                 item.save()
             return item.value
         if save:
-            Log(key=key, _type=Log.TYPE.STRING, uid=uid, oid=oid, label=label, day=day, hour=hour, value=value, name=name).save()
+            StatsLog(key=key, _type=StatsLog.TYPE.STRING, uid=uid, xid=xid, label=label,
+                day=day, hour=hour, value=value, name=name).save()
             return value
         return None
 
     @staticmethod
-    def set_text(key, uid='', oid='', label='', day=lambda: today(), hour=-1, value='', name=None, save=True):
+    def set_text(key, uid='', xid='', label='', day=lambda: today(),
+                hour=-1, value='', name=None, save=True):
         """ 设置值(字符串) """
         if callable(day):
             day = day()
@@ -372,16 +387,19 @@ class Log(db.Document):
         params = dict(set__value=value, set__updated_at=datetime.now())
         if name:
             params['set__name'] = name
-        item = Log.objects(key=key, uid=uid, oid=oid, label=label, day=day, hour=hour).modify(**params)
+        item = StatsLog.objects(key=key, uid=uid, xid=xid, label=label,
+                    day=day, hour=hour).modify(**params)
         if item:
             return value
         if save:
-            Log(key=key, _type=Log.TYPE.STRING, uid=uid, oid=oid, label=label, day=day, hour=hour, value=value, name=name).save()
+            StatsLog(key=key, _type=StatsLog.TYPE.STRING, uid=uid, xid=xid, label=label,
+                day=day, hour=hour, value=value, name=name).save()
             return value
         return None
 
     @staticmethod
-    def bool(key, uid='', oid='', label='', day=lambda: today(), hour=-1, value=False, name=None, save=True):
+    def bool(key, uid='', xid='', label='', day=lambda: today(), hour=-1,
+                value=False, name=None, save=True):
         """ 取值(布尔值) """
         if callable(day):
             day = day()
@@ -390,19 +408,22 @@ class Log(db.Document):
         if type(value) is not bool:
             raise ValueError('Invalid value: %s, %s is not a boolean type value.' % (value, value))
 
-        item = Log.objects(key=key, uid=uid, oid=oid, label=label, day=day, hour=hour).first()
+        item = StatsLog.objects(key=key, uid=uid, xid=xid, label=label,
+                            day=day, hour=hour).first()
         if item:
             if name:
                 item.name = name
                 item.save()
             return item.value
         if save:
-            Log(key=key, _type=Log.TYPE.BOOLEAN, uid=uid, oid=oid, label=label, day=day, hour=hour, value=value, name=name).save()
+            StatsLog(key=key, _type=StatsLog.TYPE.BOOLEAN, uid=uid, xid=xid, label=label,
+                day=day, hour=hour, value=value, name=name).save()
             return value
         return None
 
     @staticmethod
-    def set_bool(key, uid='', oid='', label='', day=lambda: today(), hour=-1, value=False, name=None, save=True):
+    def set_bool(key, uid='', xid='', label='', day=lambda: today(), hour=-1,
+                    value=False, name=None, save=True):
         """ 设置值(布尔值) """
         if callable(day):
             day = day()
@@ -414,110 +435,125 @@ class Log(db.Document):
         params = dict(set__value=value, set__updated_at=datetime.now())
         if name:
             params['set__name'] = name
-        item = Log.objects(key=key, uid=uid, oid=oid, label=label, day=day, hour=hour).modify(**params)
+        item = StatsLog.objects(key=key, uid=uid, xid=xid, label=label, day=day,
+                            hour=hour).modify(**params)
         if item:
             return value
         if save:
-            Log(key=key, _type=Log.TYPE.BOOLEAN, uid=uid, oid=oid, label=label, day=day, hour=hour, value=value, name=name).save()
+            StatsLog(key=key, _type=StatsLog.TYPE.BOOLEAN, uid=uid, xid=xid, label=label,
+                day=day, hour=hour, value=value, name=name).save()
             return value
         return None
 
     @staticmethod
-    def xget(key, uid='', oid='', label='', day='', hour=-1, value=0, name=None, save=True):
+    def xget(key, uid='', xid='', label='', day='', hour=-1,
+                value=0, name=None, save=True):
         """ 取值 """
-        return Log.get(key, uid, oid, label, day, hour, value, name, save)
+        return StatsLog.get(key, uid, xid, label, day, hour, value, name, save)
 
     @staticmethod
-    def xset(key, uid='', oid='', label='', day='', hour=-1, value=0, name=name, save=True):
+    def xset(key, uid='', xid='', label='', day='', hour=-1,
+                value=0, name=name, save=True):
         """ 设置值 """
-        return Log.set(key, uid, oid, label, day, hour, value, name, save)
+        return StatsLog.set(key, uid, xid, label, day, hour, value, name, save)
 
     @staticmethod
-    def xinc(key, uid='', oid='', label='', day='', hour=-1, start=0, value=1, name=None, save=True):
+    def xinc(key, uid='', xid='', label='', day='', hour=-1,
+                start=0, value=1, name=None, save=True):
         """ 递增 """
-        return Log.inc(key, uid, oid, label, day, hour, start, value, name, save)
+        return StatsLog.inc(key, uid, xid, label, day, hour, start, value, name, save)
 
     @staticmethod
-    def xtext(key, uid='', oid='', label='', day='', hour=-1, value='', name=None, save=True):
+    def xtext(key, uid='', xid='', label='', day='', hour=-1,
+                value='', name=None, save=True):
         """ 取值(字符串) """
-        return Log.text(key, uid, oid, label, day, hour, value, name, save)
+        return StatsLog.text(key, uid, xid, label, day, hour, value, name, save)
 
     @staticmethod
-    def xset_text(key, uid='', oid='', label='', day='', hour=-1, value='', name=None, save=True):
+    def xset_text(key, uid='', xid='', label='', day='',
+                hour=-1, value='', name=None, save=True):
         """ 设置值(字符串) """
-        return Log.set_text(key, uid, oid, label, day, hour, value, name, save)
+        return StatsLog.set_text(key, uid, xid, label, day, hour, value, name, save)
 
     @staticmethod
-    def xbool(key, uid='', oid='', label='', day='', hour=-1, value=False, name=None, save=True):
+    def xbool(key, uid='', xid='', label='', day='', hour=-1,
+                value=False, name=None, save=True):
         """ 取值(布尔值) """
-        return Log.bool(key, uid, oid, label, day, hour, value, name, save)
+        return StatsLog.bool(key, uid, xid, label, day, hour, value, name, save)
 
     @staticmethod
-    def xset_bool(key, uid='', oid='', label='', day='', hour=-1, value=False, name=None, save=True):
+    def xset_bool(key, uid='', xid='', label='', day='', hour=-1,
+                    value=False, name=None, save=True):
         """ 设置值(布尔值) """
-        return Log.set_bool(key, uid, oid, label, day, hour, value, name, save)
+        return StatsLog.set_bool(key, uid, xid, label, day, hour, value, name, save)
 
     @staticmethod
-    def choice(key, uid='', oid='', label='', day=lambda: today(), hour=-1, value='', name=None, sep='|', coerce=str):
-        return coerce(random.choice(Log.text(key, uid=uid, oid=oid,
+    def choice(key, uid='', xid='', label='', day=lambda: today(),
+                hour=-1, value='', name=None, sep='|', coerce=str):
+        return coerce(random.choice(StatsLog.text(key, uid=uid, xid=xid,
                         label=label, day=day, hour=hour,
                         value=value, name=name).split(sep)))
 
     @staticmethod
-    def xchoice(key, uid='', oid='', label='', day='', hour=-1, value='', name=None, sep='|', coerce=str):
-        return coerce(random.choice(Log.xtext(key, uid=uid, oid=oid,
+    def xchoice(key, uid='', xid='', label='', day='', hour=-1,
+                value='', name=None, sep='|', coerce=str):
+        return coerce(random.choice(StatsLog.xtext(key, uid=uid, xid=xid,
                         label=label, day=day, hour=hour,
                         value=value, name=name).split(sep)))
 
     @staticmethod
-    def list(key, uid='', oid='', label='', day=lambda: today(), hour=-1, value='', name=None, sep='|', coerce=int):
+    def list(key, uid='', xid='', label='', day=lambda: today(),
+                hour=-1, value='', name=None, sep='|', coerce=int):
         """ 将特定格式的字符串转为一维数组 """
         """ 例如， 字符串格式为'1|2|3|4'， 返回的是[1, 2, 3, 4] """
-        texts = Log.text(key, uid=uid, oid=oid,
+        texts = StatsLog.text(key, uid=uid, xid=xid,
                         label=label, day=day, hour=hour,
                         value=value, name=name).split(sep)
         return [coerce(x) for x in texts]
 
     @staticmethod
-    def xlist(key, uid='', oid='', label='', day='', hour=-1, value='', name=None, sep='|', coerce=int):
+    def xlist(key, uid='', xid='', label='', day='', hour=-1,
+                value='', name=None, sep='|', coerce=int):
         """ 将特定格式的字符串转为一维数组 """
         """ 例如， 字符串格式为'1|2|3|4'， 返回的是[1, 2, 3, 4] """
-        texts = Log.xtext(key, uid=uid, oid=oid,
+        texts = StatsLog.xtext(key, uid=uid, xid=xid,
                         label=label, day=day, hour=hour,
                         value=value, name=name).split(sep)
         return [coerce(x) for x in texts]
 
     @staticmethod
-    def group(key, uid='', oid='', label='', day=lambda: today(), hour=-1, value='', name=None, sep='|', sub='-', coerce=int):
+    def group(key, uid='', xid='', label='', day=lambda: today(),
+                hour=-1, value='', name=None, sep='|', sub='-', coerce=int):
         """ 将特定格式的字符串转为二维数组 """
         """ 例如， 字符串格式为'1-3|4-9|10-32|64-128'， 
             返回的是[[1, 3], [4, 9], [10, 32], [64, 128]]
         """
-        texts = Log.text(key, uid=uid, oid=oid,
+        texts = StatsLog.text(key, uid=uid, xid=xid,
                         label=label, day=day, hour=hour,
                         value=value, name=name).split(sep)
         return [[coerce(y) for y in x.split(sub)] for x in texts]
 
     @staticmethod
-    def xgroup(key, uid='', oid='', label='', day='', hour=-1, value='', name=None, sep='|', sub='-', coerce=int):
+    def xgroup(key, uid='', xid='', label='', day='', hour=-1,
+                value='', name=None, sep='|', sub='-', coerce=int):
         """ 将特定格式的字符串转为二维数组 """
         """ 例如， 字符串格式为'1-3|4-9|10-32|64-128'， 
             返回的是[[1, 3], [4, 9], [10, 32], [64, 128]]
         """
-        texts = Log.xtext(key, uid=uid, oid=oid,
+        texts = StatsLog.xtext(key, uid=uid, xid=xid,
                         label=label, day=day, hour=hour,
                         value=value, name=name).split(sep)
         return [[coerce(y) for y in x.split(sub)] for x in texts]
 
     @staticmethod
-    def hour_range(key, uid='', oid='', label='', day=lambda: today(),
+    def hour_range(key, uid='', xid='', label='', day=lambda: today(),
                 hour=-1, value='', name=None, sep='|', sub='-', default=None):
         """ 获取当前时间整点所在的整点区间 """
         """ 例如， 当前时间的整点是10点， value为'3-8|9-14|15-23', 则10在区间[9, 14]之间，
                 返回的值是[9, 14]
         """
         h = datetime.now().hour
-        for x in Log.group(key, uid=uid, oid=oid,
+        for x in StatsLog.group(key, uid=uid, xid=xid,
                         label=label, day=day, hour=hour,
                         value=value, name=name, sep=sep, sub=sub):
             if x[0] <= h <= x[1]:
@@ -525,14 +561,14 @@ class Log(db.Document):
         return default
 
     @staticmethod
-    def xhour_range(key, uid='', oid='', label='', day='', hour=-1,
+    def xhour_range(key, uid='', xid='', label='', day='', hour=-1,
                 value='', name=None, sep='|', sub='-', default=None):
         """ 获取当前时间整点所在的整点区间 """
         """ 例如， 当前时间的整点是10点， value为'3-8|9-14|15-23', 则10在区间[9, 14]之间，
                 返回的值是[9, 14]
         """
         h = datetime.now().hour
-        for x in Log.xgroup(key, uid=uid, oid=oid,
+        for x in StatsLog.xgroup(key, uid=uid, xid=xid,
                         label=label, day=day, hour=hour,
                         value=value, name=name, sep=sep, sub=sub):
             if x[0] <= h <= x[1]:
