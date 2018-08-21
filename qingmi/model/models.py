@@ -96,9 +96,9 @@ class Item(db.Document):
         """ 获取布尔类型的键值 """
         item = Item.objects(key=key).first()
         if item:
-            return item.value
+            return True if item.value in ['true', 'True'] else False
         Item(key=key, _type=Item.TYPE.BOOLEAN, value=value, name=name).save()
-        return True if value in ['true', 'True'] else False
+        return value
 
     @staticmethod
     def set_bool(key, value=False, name=None):
