@@ -98,7 +98,7 @@ class Item(db.Document):
         if item:
             return item.value
         Item(key=key, _type=Item.TYPE.BOOLEAN, value=value, name=name).save()
-        return value
+        return True if value in ['true', 'True'] else False
 
     @staticmethod
     def set_bool(key, value=False, name=None):
@@ -112,6 +112,7 @@ class Item(db.Document):
         item.value = value
         item.updated_at = datetime.now()
         item.save()
+        return True if value in ['true', 'True'] else False
 
     @staticmethod
     def choice(key, value='', name=None, sep='|', coerce=str):
