@@ -1,11 +1,37 @@
 # coding: utf-8
 
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 
 def today():
-    """ 返回datetime.datetime类型的日期， 如datetime.datetime(2018, 6, 8, 0, 0) """
+    """ 今天日期 """
+    """ 返回datetime.datetime类型的日期， 
+        如今天是datetime.datetime(2018, 8, 22, 0, 0)，
+        若序列化后为'2018-08-22 00:00:00'
+    """
     return datetime.strptime(str(date.today()), '%Y-%m-%d')
+
+def yesterday():
+    """ 昨天日期 """
+    """ 返回datetime.datetime类型的日期，
+        如昨天是datetime.datetime(2018, 8, 21, 0, 0)，
+        若序列化后为'2018-08-21 00:00:00'
+    """
+    today = date.today()
+    oneday = timedelta(days=1)
+    yesterday = today - oneday
+    return datetime.strptime(str(yesterday), '%Y-%m-%d')
+
+def tomorrow():
+    """ 明天日期 """
+    """ 返回datetime.datetime类型的日期，
+        如明天是datetime.datetime(2018, 8, 21, 0, 0)，
+        若序列化后为'2018-08-23 00:00:00'
+    """
+    today = date.today() 
+    oneday = timedelta(days=1) 
+    tomorrow = today + oneday  
+    return datetime.strptime(str(tomorrow), '%Y-%m-%d')
 
 def parse_datetime(input):
     """ 格式化日期时间 """

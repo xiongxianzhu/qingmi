@@ -490,88 +490,111 @@ class StatsLog(db.Document):
 
     @staticmethod
     def choice(key, uid='', xid='', label='', day=lambda: today(),
-                hour=-1, value='', name=None, sep='|', coerce=str):
+                hour=-1, value='', name=None, save=True, sep='|', coerce=str):
         return coerce(random.choice(StatsLog.text(key, uid=uid, xid=xid,
                         label=label, day=day, hour=hour,
-                        value=value, name=name).split(sep)))
+                        value=value, name=name, save=save).split(sep)))
 
     @staticmethod
     def xchoice(key, uid='', xid='', label='', day='', hour=-1,
-                value='', name=None, sep='|', coerce=str):
+                value='', name=None, save=True, sep='|', coerce=str):
         return coerce(random.choice(StatsLog.xtext(key, uid=uid, xid=xid,
                         label=label, day=day, hour=hour,
-                        value=value, name=name).split(sep)))
+                        value=value, name=name, save=save).split(sep)))
 
     @staticmethod
     def list(key, uid='', xid='', label='', day=lambda: today(),
-                hour=-1, value='', name=None, sep='|', coerce=int):
+                hour=-1, value='', name=None, save=True,
+                sep='|', coerce=int):
         """ 将特定格式的字符串转为一维数组 """
         """ 例如， 字符串格式为'1|2|3|4'， 返回的是[1, 2, 3, 4] """
-        texts = StatsLog.text(key, uid=uid, xid=xid,
+        text = StatsLog.text(key, uid=uid, xid=xid,
                         label=label, day=day, hour=hour,
-                        value=value, name=name).split(sep)
+                        value=value, name=name, save=save)
+        if not text:
+            return None
+        texts = text.split(sep)
         return [coerce(x) for x in texts]
 
     @staticmethod
     def xlist(key, uid='', xid='', label='', day='', hour=-1,
-                value='', name=None, sep='|', coerce=int):
+                value='', name=None, save=True, sep='|', coerce=int):
         """ 将特定格式的字符串转为一维数组 """
         """ 例如， 字符串格式为'1|2|3|4'， 返回的是[1, 2, 3, 4] """
-        texts = StatsLog.xtext(key, uid=uid, xid=xid,
+        text = StatsLog.xtext(key, uid=uid, xid=xid,
                         label=label, day=day, hour=hour,
-                        value=value, name=name).split(sep)
+                        value=value, name=name, save=save)
+        if not text:
+            return None
+        texts = text.split(sep)
         return [coerce(x) for x in texts]
 
     @staticmethod
     def group(key, uid='', xid='', label='', day=lambda: today(),
-                hour=-1, value='', name=None, sep='|', sub='-', coerce=int):
+                hour=-1, value='', name=None, save=True,
+                sep='|', sub='-', coerce=int):
         """ 将特定格式的字符串转为二维数组 """
         """ 例如， 字符串格式为'1-3|4-9|10-32|64-128'， 
             返回的是[[1, 3], [4, 9], [10, 32], [64, 128]]
         """
-        texts = StatsLog.text(key, uid=uid, xid=xid,
+        text = StatsLog.text(key, uid=uid, xid=xid,
                         label=label, day=day, hour=hour,
-                        value=value, name=name).split(sep)
+                        value=value, name=name, save=save)
+        if not text:
+            return None
+        texts = text.split(sep)
         return [[coerce(y) for y in x.split(sub)] for x in texts]
 
     @staticmethod
     def xgroup(key, uid='', xid='', label='', day='', hour=-1,
-                value='', name=None, sep='|', sub='-', coerce=int):
+                value='', name=None, save=True,
+                sep='|', sub='-', coerce=int):
         """ 将特定格式的字符串转为二维数组 """
         """ 例如， 字符串格式为'1-3|4-9|10-32|64-128'， 
             返回的是[[1, 3], [4, 9], [10, 32], [64, 128]]
         """
-        texts = StatsLog.xtext(key, uid=uid, xid=xid,
+        text = StatsLog.xtext(key, uid=uid, xid=xid,
                         label=label, day=day, hour=hour,
-                        value=value, name=name).split(sep)
+                        value=value, name=name, save=save)
+        texts = text.split(sep)
         return [[coerce(y) for y in x.split(sub)] for x in texts]
 
     @staticmethod
     def hour_range(key, uid='', xid='', label='', day=lambda: today(),
-                hour=-1, value='', name=None, sep='|', sub='-', default=None):
+                hour=-1, value='', name=None, save=True,
+                sep='|', sub='-', default=None):
         """ 获取当前时间整点所在的整点区间 """
         """ 例如， 当前时间的整点是10点， value为'3-8|9-14|15-23', 则10在区间[9, 14]之间，
                 返回的值是[9, 14]
         """
-        h = datetime.now().hour
-        for x in StatsLog.group(key, uid=uid, xid=xid,
+        groups = StatsLog.group(key, uid=uid, xid=xid,
                         label=label, day=day, hour=hour,
-                        value=value, name=name, sep=sep, sub=sub):
+                        value=value, name=name, save=save,
+                        sep=sep, sub=sub)
+        if not groups:
+            return None
+        h = datetime.now().hour
+        for x in groups:
             if x[0] <= h <= x[1]:
                 return x
         return default
 
     @staticmethod
     def xhour_range(key, uid='', xid='', label='', day='', hour=-1,
-                value='', name=None, sep='|', sub='-', default=None):
+                value='', name=None, save=True,
+                sep='|', sub='-', default=None):
         """ 获取当前时间整点所在的整点区间 """
         """ 例如， 当前时间的整点是10点， value为'3-8|9-14|15-23', 则10在区间[9, 14]之间，
                 返回的值是[9, 14]
         """
-        h = datetime.now().hour
-        for x in StatsLog.xgroup(key, uid=uid, xid=xid,
+        groups = StatsLog.xgroup(key, uid=uid, xid=xid,
                         label=label, day=day, hour=hour,
-                        value=value, name=name, sep=sep, sub=sub):
+                        value=value, name=name, save=save,
+                        sep=sep, sub=sub)
+        if not groups:
+            return None
+        h = datetime.now().hour
+        for x in groups:
             if x[0] <= h <= x[1]:
                 return x
         return default
