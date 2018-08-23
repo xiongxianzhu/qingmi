@@ -30,23 +30,23 @@ class Item(db.Document):
     @staticmethod
     # @cache.memoize(timeout=5)
     def get(key, value=0, name=None):
-        """ 取值 """
+        """ 取值(整型/浮点型) """
         item = Item.objects(key=key).first()
         if item:
             return item.value
-
-        Item(key=key, _type=Item.TYPE.INT, value=value, name=name).save()
+        date_type = Item.TYPE.FLOAT if type(value) is float else Item.TYPE.INT
+        Item(key=key, _type=date_type, value=value, name=name).save()
         return value
 
     @staticmethod
     def set(key, value=0, name=None):
-        """ 设置值 """
+        """ 设置值(整型/浮点型) """
         item = Item.objects(key=key).first()
         if not item:
             item = Item(key=key)
         if name:
             item.name = name
-        item._type = Item.TYPE.INT
+        item._type = Item.TYPE.FLOAT if type(value) is float else Item.TYPE.INT
         item.value = value
         item.updated_at = datetime.now()
         item.save()
@@ -70,7 +70,7 @@ class Item(db.Document):
     @staticmethod
     # @cache.memoize(timeout=5)
     def text(key, value='', name=None):
-        """ 获取字符串类型的键值 """
+        """ 取值(字符串) """
         item = Item.objects(key=key).first()
         if item:
             return item.value
@@ -79,7 +79,7 @@ class Item(db.Document):
 
     @staticmethod
     def set_text(key, value='', name=None):
-        """ 设置字符串类型的键值 """
+        """ 设置值(字符串) """
         item = Item.objects(key=key).first()
         if not item:
             item = Item(key=key)
@@ -93,7 +93,7 @@ class Item(db.Document):
     @staticmethod
     # @cache.memoize(timeout=5)
     def bool(key, value=False, name=None):
-        """ 获取布尔类型的键值 """
+        """ 取值(布尔类型) """
         item = Item.objects(key=key).first()
         if item:
             return True if item.value in ['true', 'True'] else False
@@ -102,7 +102,7 @@ class Item(db.Document):
 
     @staticmethod
     def set_bool(key, value=False, name=None):
-        """ 设置布尔类型的键值 """
+        """ 设置值(布尔类型) """
         item = Item.objects(key=key).first()
         if not item:
             item = Item(key=key)

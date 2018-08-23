@@ -4,7 +4,7 @@ import string
 # 造一个36进制： 'abcdefghijklmnopqrstuvwxyz0123456789'
 case = string.ascii_lowercase + string.digits
 
-def get_uid(num):
+def get_uid(num, length=6):
     """ 
     根据用户索引生成用户的uid
 
@@ -20,7 +20,7 @@ def get_uid(num):
     """
     res = []
 
-    for i in range(6):
+    for i in range(length):
         res.append(case[num % 36])
         num //= 36
     return ''.join(reversed(res))
