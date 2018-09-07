@@ -1,3 +1,4 @@
 # coding: utf-8
 
-name = 'qingmi'
+from .__about__ import *
+from .jinja import *

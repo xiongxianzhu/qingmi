@@ -18,8 +18,8 @@ def yesterday():
         若序列化后为'2018-08-21 00:00:00'
     """
     today = date.today()
-    oneday = timedelta(days=1)
-    yesterday = today - oneday
+    _days = timedelta(days=1)
+    yesterday = today - _days
     return datetime.strptime(str(yesterday), '%Y-%m-%d')
 
 def tomorrow():
@@ -29,9 +29,22 @@ def tomorrow():
         若序列化后为'2018-08-23 00:00:00'
     """
     today = date.today() 
-    oneday = timedelta(days=1) 
-    tomorrow = today + oneday  
+    _days = timedelta(days=1)
+    tomorrow = today + _days  
     return datetime.strptime(str(tomorrow), '%Y-%m-%d')
+
+def oneday(days):
+    """ A few days later/ago """
+    if type(days) != int:
+        raise ValueError('Invalid int value for days: %s.' % days)
+    today = date.today() 
+    _days = timedelta(days=days)
+    oneday = today + _days  
+    return datetime.strptime(str(oneday), '%Y-%m-%d')
+
+def datetimeformat(value, format='%Y-%m-%d %H:%M:%S'):
+    """ 时间格式化 """
+    return value.strftime(format)
 
 def parse_datetime(input):
     """ 格式化日期时间 """
