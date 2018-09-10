@@ -14,7 +14,7 @@ class Item(db.Document):
 
     name = db.StringField(max_length=40, verbose_name='名称')
     key = db.StringField(max_length=40, verbose_name='键名')
-    _type = db.StringField(default=TYPE.INT, choices=TYPE.CHOICES, verbose_name='类型')
+    data_type = db.StringField(default=TYPE.INT, choices=TYPE.CHOICES, verbose_name='类型')
     value = db.DynamicField(verbose_name='值')
     created_at = db.DateTimeField(default=datetime.now, verbose_name='创建时间')
     updated_at = db.DateTimeField(default=datetime.now, verbose_name='更新时间')
@@ -35,7 +35,7 @@ class Item(db.Document):
         if item:
             return item.value
         date_type = Item.TYPE.FLOAT if type(value) is float else Item.TYPE.INT
-        Item(key=key, _type=date_type, value=value, name=name).save()
+        Item(key=key, data_type=date_type, value=value, name=name).save()
         return value
 
     @staticmethod
@@ -46,7 +46,7 @@ class Item(db.Document):
             item = Item(key=key)
         if name:
             item.name = name
-        item._type = Item.TYPE.FLOAT if type(value) is float else Item.TYPE.INT
+        item.data_type = Item.TYPE.FLOAT if type(value) is float else Item.TYPE.INT
         item.value = value
         item.updated_at = datetime.now()
         item.save()
@@ -59,7 +59,7 @@ class Item(db.Document):
             params['set__name'] = name
         item = Item.objects(key=key).modify(**params)
         if not item:
-            params = dict(key=key, _type=Item.TYPE.INT, value=start+value)
+            params = dict(key=key, data_type=Item.TYPE.INT, value=start+value)
             if name:
                 params['name'] = name
             Item(**params).save()
@@ -74,7 +74,7 @@ class Item(db.Document):
         item = Item.objects(key=key).first()
         if item:
             return item.value
-        Item(key=key, _type=Item.TYPE.STRING, value=value, name=name).save()
+        Item(key=key, data_type=Item.TYPE.STRING, value=value, name=name).save()
         return value
 
     @staticmethod
@@ -85,7 +85,7 @@ class Item(db.Document):
             item = Item(key=key)
         if name:
             item.name = name
-        item._type = Item.TYPE.STRING
+        item.data_type = Item.TYPE.STRING
         item.value = value
         item.updated_at = datetime.now()
         item.save()
@@ -97,7 +97,7 @@ class Item(db.Document):
         item = Item.objects(key=key).first()
         if item:
             return True if item.value in ['true', 'True'] else False
-        Item(key=key, _type=Item.TYPE.BOOLEAN, value=value, name=name).save()
+        Item(key=key, data_type=Item.TYPE.BOOLEAN, value=value, name=name).save()
         return value
 
     @staticmethod
@@ -108,7 +108,7 @@ class Item(db.Document):
             item = Item(key=key)
         if name:
             item.name = name
-        item._type = Item.TYPE.BOOLEAN
+        item.data_type = Item.TYPE.BOOLEAN
         item.value = value
         item.updated_at = datetime.now()
         item.save()
@@ -273,7 +273,7 @@ class StatsLog(db.Document):
     key = db.StringField(verbose_name='键名')
     uid = db.StringField(verbose_name='用户ID')
     xid = db.StringField(verbose_name='其他ID')
-    _type = db.StringField(default=TYPE.INT, choices=TYPE.CHOICES, verbose_name='类型')
+    data_type = db.StringField(default=TYPE.INT, choices=TYPE.CHOICES, verbose_name='类型')
     label = db.StringField(verbose_name='标签')
     day = db.StringField(verbose_name='日期')
     hour = db.IntField(default=0, verbose_name='小时')
@@ -308,7 +308,7 @@ class StatsLog(db.Document):
             return item.value
         if save:
             date_type = StatsLog.TYPE.FLOAT if type(value) is float else StatsLog.TYPE.INT
-            StatsLog(key=key, _type=date_type, uid=uid, xid=xid, label=label, day=day,
+            StatsLog(key=key, data_type=date_type, uid=uid, xid=xid, label=label, day=day,
                     hour=hour, value=value, name=name).save()
             return value
         return None
@@ -330,7 +330,7 @@ class StatsLog(db.Document):
         if item:
             return value
         if save:
-            StatsLog(key=key, _type=date_type, uid=uid, xid=xid, label=label,
+            StatsLog(key=key, data_type=date_type, uid=uid, xid=xid, label=label,
                 day=day, hour=hour, value=value, name=name).save()
             return value
         return None
@@ -352,7 +352,7 @@ class StatsLog(db.Document):
         if item:
             return item.value + value
         if save:
-            StatsLog(key=key, _type=date_type, uid=uid, xid=xid, label=label,
+            StatsLog(key=key, data_type=date_type, uid=uid, xid=xid, label=label,
                 day=day, hour=hour, value=start+value, name=name).save()
             return start+value
         return None
@@ -372,7 +372,7 @@ class StatsLog(db.Document):
                 item.save()
             return item.value
         if save:
-            StatsLog(key=key, _type=StatsLog.TYPE.STRING, uid=uid, xid=xid, label=label,
+            StatsLog(key=key, data_type=StatsLog.TYPE.STRING, uid=uid, xid=xid, label=label,
                 day=day, hour=hour, value=value, name=name).save()
             return value
         return None
@@ -393,7 +393,7 @@ class StatsLog(db.Document):
         if item:
             return value
         if save:
-            StatsLog(key=key, _type=StatsLog.TYPE.STRING, uid=uid, xid=xid, label=label,
+            StatsLog(key=key, data_type=StatsLog.TYPE.STRING, uid=uid, xid=xid, label=label,
                 day=day, hour=hour, value=value, name=name).save()
             return value
         return None
@@ -417,7 +417,7 @@ class StatsLog(db.Document):
                 item.save()
             return item.value
         if save:
-            StatsLog(key=key, _type=StatsLog.TYPE.BOOLEAN, uid=uid, xid=xid, label=label,
+            StatsLog(key=key, data_type=StatsLog.TYPE.BOOLEAN, uid=uid, xid=xid, label=label,
                 day=day, hour=hour, value=value, name=name).save()
             return value
         return None
@@ -441,7 +441,7 @@ class StatsLog(db.Document):
         if item:
             return value
         if save:
-            StatsLog(key=key, _type=StatsLog.TYPE.BOOLEAN, uid=uid, xid=xid, label=label,
+            StatsLog(key=key, data_type=StatsLog.TYPE.BOOLEAN, uid=uid, xid=xid, label=label,
                 day=day, hour=hour, value=value, name=name).save()
             return value
         return None
