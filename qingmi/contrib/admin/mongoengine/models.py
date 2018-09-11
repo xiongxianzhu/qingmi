@@ -11,15 +11,15 @@ from qingmi.utils import get_ip, get_useragent
 class AdminUser(db.Document):
     """ 管理员 """
 
-    uid = db.IntField(verbose_name='UID')
+    uid = db.StringField(max_length=50, verbose_name='UID')
     username = db.StringField(verbose_name='用户名')
     password = db.StringField(verbose_name='密码')
     group = db.ReferenceField('AdminGroup', verbose_name='管理组')
-    is_root = db.BooleanField(default=False, verbose_name='超级管理员')
-    is_active = db.BooleanField(default=True, verbose_name='激活')
+    is_root = db.BooleanField(default=False, verbose_name='是否超级管理员')
+    active = db.BooleanField(default=True, verbose_name='是否激活')
     freezed_at = db.DateTimeField(verbose_name='冻结时间')
     logined_at = db.DateTimeField(default=datetime.now, verbose_name='登录时间')
-    updated_at = db.DateTimeField(default=datetime.now, verbose_name='修改时间')
+    updated_at = db.DateTimeField(default=datetime.now, verbose_name='更新时间')
     created_at = db.DateTimeField(default=datetime.now, verbose_name='创建时间')
 
     def __unicode__(self):
@@ -44,7 +44,7 @@ class AdminUser(db.Document):
         return False
 
     def get_id(self):
-        return str(self.uid)
+        return str(self.username)
 
 
 class AdminGroup(db.Document):
@@ -55,7 +55,7 @@ class AdminGroup(db.Document):
     can_create = db.ListField(db.ReferenceField('View'), verbose_name='创建权限')
     can_edit = db.ListField(db.ReferenceField('View'), verbose_name='编辑权限')
     can_delete = db.ListField(db.ReferenceField('View'), verbose_name='删除权限')
-    updated_at = db.DateTimeField(default=datetime.now, verbose_name='修改时间')
+    updated_at = db.DateTimeField(default=datetime.now, verbose_name='更新时间')
     created_at = db.DateTimeField(default=datetime.now, verbose_name='创建时间')
 
     def __unicode__(self):
