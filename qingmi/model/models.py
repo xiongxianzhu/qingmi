@@ -598,3 +598,33 @@ class StatsLog(db.Document):
             if x[0] <= h <= x[1]:
                 return x
         return default
+
+
+class View(db.Document):
+    """ 视图 """
+
+    TYPE = db.choices(DEFAULT='默认', MODEL='模型', CATEGORY='分类')
+
+    name = db.StringField(max_length=128, verbose_name='名称')
+    desc = db.StringField(max_length=128, verbose_name='描述')
+    view_type = db.StringField(default=TYPE.DEFAULT, choices=TYPE.CHOICES,
+                                verbose_name='类型')
+    # model = db.ReferenceField('Model', verbose_name='模型')
+    menu_icon = db.StringField(max_length=128, verbose_name='图标')
+    page_size = db.IntField(default=50, verbose_name='每页记录数')
+    can_create = db.BooleanField(default=True, verbose_name='允许创建')
+    can_edit = db.BooleanField(default=True, verbose_name='允许编辑')
+    can_delete = db.BooleanField(default=True, verbose_name='允许删除')
+    can_view_details = db.BooleanField(default=False, verbose_name='允许查看详情')
+    can_export = db.BooleanField(default=False, verbose_name='允许导出')
+    # column_list = db.ListField(db.StringField(), verbose_name='显示列表字段')
+    # column_exclude_list = db.ListField(db.StringField(), verbose_name='隐藏列表字段')
+    column_center_list = db.ListField(db.StringField(), verbose_name='居中列表')
+    created_at = db.DateTimeField(default=datetime.now, verbose_name='创建时间')
+    updated_at = db.DateTimeField(default=datetime.now, verbose_name='更新时间')
+
+    def __repr__(self):
+        return '<View {name!r}>'.format(name=self.name)
+
+    def __unicode__(self):
+        return self.name
