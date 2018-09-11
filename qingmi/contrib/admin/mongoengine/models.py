@@ -87,7 +87,7 @@ class AdminLoginLog(db.Document):
     TYPE = db.choices(LOGIN='登录', LOGOUT='退出登录', ERROR='登录认证失败')
 
     user = db.ReferenceField('AdminUser', verbose_name='用户')
-    log_type = db.StringField(choices=TYPE.choices, verbose_name='类型')
+    log_type = db.StringField(choices=TYPE.CHOICES, verbose_name='类型')
     useragent = db.StringField(verbose_name='用户代理(UA)')
     ip = db.StringField(max_length=20, verbose_name='IP')
     created_at = db.DateTimeField(default=datetime.now, verbose_name='创建时间')
@@ -117,7 +117,7 @@ class AdminChangeLog(db.Document):
     TYPE = db.choices(CREATE='创建', EDIT='编辑', DELETE='删除')
 
     user = db.ReferenceField('AdminUser', verbose_name='用户')
-    log_type = db.StringField(choices=TYPE.choices, verbose_name='类型')
+    log_type = db.StringField(choices=TYPE.CHOICES, verbose_name='类型')
     model = db.StringField(verbose_name='模块')
     before_data = db.StringField(verbose_name='操作前数据')
     after_data = db.StringField(verbose_name='操作后数据')

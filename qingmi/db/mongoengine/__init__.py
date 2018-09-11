@@ -51,8 +51,10 @@ class DynamicDocument(_DynamicDocument):
     meta = {'abstract': True,
             'queryset_class': BaseQuerySet}
 
+
 def abstract(model):
     model._meta['abstract'] = True
+
 
 def _include_custom(obj):
     for key in fields.__all__:
