@@ -4,7 +4,7 @@ import random
 from datetime import datetime
 from werkzeug.utils import cached_property
 from qingmi.base import db
-from qingmi.contrib.admin.mongoengine import View
+from qingmi.model import View
 from qingmi.utils import get_ip, get_useragent
 
 
