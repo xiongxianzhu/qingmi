@@ -34,8 +34,8 @@ class Item(db.Document):
         item = Item.objects(key=key).first()
         if item:
             return item.value
-        date_type = Item.TYPE.FLOAT if type(value) is float else Item.TYPE.INT
-        Item(key=key, data_type=date_type, value=value, name=name).save()
+        data_type = Item.TYPE.FLOAT if type(value) is float else Item.TYPE.INT
+        Item(key=key, data_type=data_type, value=value, name=name).save()
         return value
 
     @staticmethod
@@ -307,8 +307,8 @@ class StatsLog(db.Document):
                 item.save()
             return item.value
         if save:
-            date_type = StatsLog.TYPE.FLOAT if type(value) is float else StatsLog.TYPE.INT
-            StatsLog(key=key, data_type=date_type, uid=uid, xid=xid, label=label, day=day,
+            data_type = StatsLog.TYPE.FLOAT if type(value) is float else StatsLog.TYPE.INT
+            StatsLog(key=key, data_type=data_type, uid=uid, xid=xid, label=label, day=day,
                     hour=hour, value=value, name=name).save()
             return value
         return None
@@ -321,8 +321,8 @@ class StatsLog(db.Document):
             day = day()
         day = str(day)[:10]
 
-        date_type = StatsLog.TYPE.FLOAT if type(value) is float else StatsLog.TYPE.INT
-        params = dict(set__value=value, set___type=date_type, set__updated_at=datetime.now())
+        data_type = StatsLog.TYPE.FLOAT if type(value) is float else StatsLog.TYPE.INT
+        params = dict(set__value=value, set__data_type=data_type, set__updated_at=datetime.now())
         if name:
             params['set__name'] = name
         item = StatsLog.objects(key=key, uid=uid, xid=xid, label=label,
@@ -330,7 +330,7 @@ class StatsLog(db.Document):
         if item:
             return value
         if save:
-            StatsLog(key=key, data_type=date_type, uid=uid, xid=xid, label=label,
+            StatsLog(key=key, data_type=data_type, uid=uid, xid=xid, label=label,
                 day=day, hour=hour, value=value, name=name).save()
             return value
         return None
@@ -343,8 +343,8 @@ class StatsLog(db.Document):
             day = day()
         day = str(day)[:10]
 
-        date_type = StatsLog.TYPE.FLOAT if type(value) is float else StatsLog.TYPE.INT
-        params = dict(inc__value=value, set___type=date_type, set__updated_at=datetime.now())
+        data_type = StatsLog.TYPE.FLOAT if type(value) is float else StatsLog.TYPE.INT
+        params = dict(inc__value=value, set__data_type=data_type, set__updated_at=datetime.now())
         if name:
             params['set__name'] = name
         item = StatsLog.objects(key=key, uid=uid, xid=xid, label=label,
@@ -352,7 +352,7 @@ class StatsLog(db.Document):
         if item:
             return item.value + value
         if save:
-            StatsLog(key=key, data_type=date_type, uid=uid, xid=xid, label=label,
+            StatsLog(key=key, data_type=data_type, uid=uid, xid=xid, label=label,
                 day=day, hour=hour, value=start+value, name=name).save()
             return start+value
         return None

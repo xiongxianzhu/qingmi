@@ -3,7 +3,7 @@
 import random
 from datetime import datetime
 from werkzeug.utils import cached_property
-from qingmi.base import db
+from qingmi.base import db, bcrypt
 from qingmi.model import View
 from qingmi.utils import get_ip, get_useragent
 
@@ -12,8 +12,8 @@ class AdminUser(db.Document):
     """ 管理员 """
 
     uid = db.StringField(max_length=50, verbose_name='UID')
-    username = db.StringField(verbose_name='用户名')
-    password = db.StringField(verbose_name='密码')
+    username = db.StringField(max_length=50, verbose_name='用户名')
+    password = db.StringField(max_length=128, verbose_name='密码')
     group = db.ReferenceField('AdminGroup', verbose_name='管理组')
     is_root = db.BooleanField(default=False, verbose_name='是否超级管理员')
     active = db.BooleanField(default=True, verbose_name='是否激活')
@@ -21,6 +21,10 @@ class AdminUser(db.Document):
     logined_at = db.DateTimeField(default=datetime.now, verbose_name='登录时间')
     updated_at = db.DateTimeField(default=datetime.now, verbose_name='更新时间')
     created_at = db.DateTimeField(default=datetime.now, verbose_name='创建时间')
+
+    meta = dict(
+        ordering=['-created_at'],
+    )
 
     def __unicode__(self):
         return self.username
@@ -46,11 +50,20 @@ class AdminUser(db.Document):
     def get_id(self):
         return str(self.username)
 
+    def hash_password(self, password):
+        """ hash算法加密密码 """
+        # 在python3中，你需要使用在generate_password_hash()上使用decode('utf-8')方法
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    def verify_password(self, password):
+        """ 验证密码 """
+        return bcrypt.check_password_hash(self.password, password)
+
 
 class AdminGroup(db.Document):
     """ 管理组 """
 
-    name = db.StringField(verbose_name='组名')
+    name = db.StringField(max_length=50, verbose_name='组名')
     power = db.ListField(db.ReferenceField('View'), verbose_name='使用权限')
     can_create = db.ListField(db.ReferenceField('View'), verbose_name='创建权限')
     can_edit = db.ListField(db.ReferenceField('View'), verbose_name='编辑权限')
@@ -130,27 +143,31 @@ class AdminChangeLog(db.Document):
         ua = kwargs.get('ua', get_useragent())
         ip = kwargs.get('ip', get_ip())
         AdminChangeLog(user=user, log_type=log_type, model=model,
-                        after_data=after_data, useragent=ua, ip=ip).save()
+                        before_data=before_data, after_data=after_data,
+                        useragent=ua, ip=ip).save()
 
     @staticmethod
-    def change_data(user, model, **kwargs):
+    def change_data(user, model, before, after, **kwargs):
         """ 变更数据 """
-        before = dict(id=model.id)
-        after = dict(id=model.id)
-        if kwargs.get('form'):
-            try:
-                for k, v in kwargs.get('form').data.items():
-                    if v != model[k]:
-                        before[k] = model[k]
-                        after[k] = v
-            except:
-                pass
-        else:
-            before = model.to_mongo()
+        # before = dict(id=model.id)
+        # after = dict(id=model.id)
+        # if kwargs.get('form'):
+        #     try:
+        #         for k, v in kwargs.get('form').data.items():
+        #             if v != model[k]:
+        #                 before[k] = model[k]
+        #                 after[k] = v
+        #     except:
+        #         pass
+        # else:
+        #     before = model.to_mongo()
+        before_data = before.to_mongo()
         if kwargs.get('log_type') == AdminChangeLog.TYPE.DELETE:
-            after = ''
+            after_data = ''
+        else:
+            after_data = after.to_mongo()
         AdminChangeLog.log(
             user=user, log_type=kwargs.get('log_type'),
             model=model.__class__.__name__,
-            before_data=str(before), after_data=str(after))
+            before_data=str(before_data), after_data=str(after_data))
 
