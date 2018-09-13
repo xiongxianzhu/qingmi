@@ -48,15 +48,18 @@ def get_invite_code(length=6):
 
 def md5(data):
     """ md5算法加密字符串 """
+    """ type(data): str """
     m = hashlib.md5()
     m.update(data.encode('utf-8'))
     return m.hexdigest()
 
 def b64(data):
     """ base64算法编码字符串 """
+    """ type(data): str """
     base64_encrypt = base64.b64encode(data.encode('utf-8'))
     return str(base64_encrypt, 'utf-8')
 
 def base64_md5(data):
     """ 进行MD5加密，然后Base64编码 """
+    """ type(data): str """
     return b64(md5(data))
