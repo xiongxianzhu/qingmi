@@ -7,6 +7,7 @@ import hashlib
 import hmac
 import random
 import time
+import base64
 
 
 def get_random_string(length=12,
@@ -44,3 +45,18 @@ def get_invite_code(length=6):
     """ 生成邀请码 """
     chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
     return get_random_string(length, chars)
+
+def md5(data):
+    """ md5算法加密字符串 """
+    m = hashlib.md5()
+    m.update(data.encode('utf-8'))
+    return m.hexdigest()
+
+def b64(data):
+    """ base64算法编码字符串 """
+    base64_encrypt = base64.b64encode(data.encode('utf-8'))
+    return str(base64_encrypt, 'utf-8')
+
+def base64_md5(data):
+    """ 进行MD5加密，然后Base64编码 """
+    return b64(md5(data))
