@@ -5,10 +5,13 @@ from flask_admin.base import expose
 from flask_admin.contrib.mongoengine import ModelView as _ModelView
 from flask_admin.model.base import BaseModelView
 from flask_admin.helpers import get_redirect_target
+from flask_admin._compat import string_types
 from blinker import signal
 from flask_login import current_user
+from mongoengine.fields import StringField
 from qingmi.contrib.admin.mongoengine.filters import FilterConverter
 from qingmi.contrib.admin.mongoengine import AdminChangeLog
+from qingmi.contrib.admin.mongoengine.form import CustomModelConverter
 
 
 def model_changed(flag, model, **kwargs):
@@ -25,39 +28,125 @@ model_change_signal.connect(model_changed)
 
 class ModelView(_ModelView):
 
+    model_form_converter = CustomModelConverter
     filter_converter = FilterConverter()
 
-    # def scaffold_filters(self, name):
-    #     """
-    #         Return filter object(s) for the field
+    def __init__(self, model, name=None,
+                 category=None, endpoint=None, url=None, static_folder=None,
+                 menu_class_name=None, menu_icon_type=None, menu_icon_value=None):
 
-    #         :param name:
-    #             Either field name or field instance
-    #     """
-    #     if isinstance(name, string_types):
-    #         attr = self.model._fields.get(name)
-    #     else:
-    #         attr = name
 
-    #     if attr is None:
-    #         raise Exception('Failed to find field for filter: %s' % name)
+        super(ModelView, self).__init__(model, name, category, endpoint, url, static_folder,
+                                        menu_class_name=menu_class_name,
+                                        menu_icon_type=menu_icon_type,
+                                        menu_icon_value=menu_icon_value)
 
-    #     # Find name
-    #     visible_name = None
 
-    #     if not isinstance(name, string_types):
-    #         visible_name = self.get_column_name(attr.name)
+    def scaffold_filters(self, name):
+        """
+            Return filter object(s) for the field
 
-    #     if not visible_name:
-    #         visible_name = self.get_column_name(name)
+            :param name:
+                Either field name or field instance
+        """
+        if isinstance(name, string_types):
+            attr = self.model._fields.get(name)
+        else:
+            attr = name
 
-    #     # Convert filter
-    #     type_name = type(attr).__name__
-    #     flt = self.filter_converter.convert(type_name,
-    #                                         attr,
-    #                                         visible_name)
+        if attr is None:
+            raise Exception('Failed to find field for filter: %s' % name)
 
-    #     return flt
+        # Find name
+        visible_name = None
+
+        if not isinstance(name, string_types):
+            visible_name = self.get_column_name(attr.name)
+
+        if not visible_name:
+            visible_name = self.get_column_name(name)
+
+        # Convert filter
+        type_name = type(attr).__name__
+        flt = self.filter_converter.convert(type_name,
+                                            attr,
+                                            visible_name)
+
+        return flt
+
+    def create_model(self, form):
+        """
+            Create model helper
+
+            :param form:
+                Form instance
+        """
+        try:
+            model = self.model()
+            form.populate_obj(model)
+            self._on_model_change(form, model, True)
+            model.save()
+        except Exception as ex:
+            if not self.handle_view_exception(ex):
+                flash(gettext('Failed to create record. %(error)s',
+                              error=format_error(ex)),
+                      'error')
+                log.exception('Failed to create record.')
+
+            return False
+        else:
+            self.after_model_change(form, model, True)
+
+        return model
+
+    def update_model(self, form, model):
+        """
+            Update model helper
+
+            :param form:
+                Form instance
+            :param model:
+                Model instance to update
+        """
+        try:
+            form.populate_obj(model)
+            self._on_model_change(form, model, False)
+            model.save()
+        except Exception as ex:
+            if not self.handle_view_exception(ex):
+                flash(gettext('Failed to update record. %(error)s',
+                              error=format_error(ex)),
+                      'error')
+                log.exception('Failed to update record.')
+
+            return False
+        else:
+            self.after_model_change(form, model, False)
+
+        return True
+
+    def delete_model(self, model):
+        """
+            Delete model helper
+
+            :param model:
+                Model instance
+        """
+        try:
+            self.on_model_delete(model)
+            model.delete()
+        except Exception as ex:
+            if not self.handle_view_exception(ex):
+                flash(gettext('Failed to delete record. %(error)s',
+                              error=format_error(ex)),
+                      'error')
+                log.exception('Failed to delete record.')
+
+            return False
+        else:
+            self.after_model_delete(model)
+
+        return True
     
 
     def _refresh_cache(self):
