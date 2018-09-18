@@ -19,6 +19,9 @@ def quoteattr_list(*args):
 
 def text2short(text, max_lenth=20):
     """ long text to short text """
+    if text is None:
+        return ''
+    text = str(text)
     return text[:max_lenth] + '...' if len(text) > max_lenth else text
 
 
@@ -65,7 +68,7 @@ def formatter_model(func):
     return wrapper
 
 
-def formatter_len(max_lenth=20, cls=''):
+def formatter_text(max_lenth=20, cls=''):
     @formatter
     def wrapper(data):
         data = str(data)
@@ -83,3 +86,18 @@ def formatter_link(func, max_lenth=20, blank=True, cls='', **kwargs):
         return text2link(text, link)
 
     return wrapper
+
+
+@markupper
+def formatter_bool(view, value, model, name):
+    url = view.get_url('.ajax_change')
+    val = str(value)
+
+    html_tpl = """<div class="onoffswitch">
+        <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="%s" %s>
+        <label class="onoffswitch-label" for="%s" data-id="%s" data-name="%s" data-value="%s" data-url="%s">
+            <span class="onoffswitch-inner"></span>
+            <span class="onoffswitch-switch"></span>
+        </label>
+    </div>""" % (model.id, 'checked' if value else '', model.id, model.id, name, val, url)
+    return html_tpl

@@ -7,12 +7,14 @@ from flask_admin.model.base import BaseModelView
 from flask_admin.helpers import get_redirect_target
 from flask_admin._compat import string_types
 from blinker import signal
+from jinja2 import contextfunction
 from flask_login import current_user
 from mongoengine.fields import StringField
 from qingmi.contrib.admin.mongoengine.filters import FilterConverter
 from qingmi.contrib.admin.mongoengine import AdminChangeLog
 from qingmi.contrib.admin.mongoengine.form import CustomModelConverter
-from qingmi.admin.formatters import formatter_len
+from qingmi.admin.formatters import formatter_text, formatter_bool
+from qingmi.utils import json_success, json_error
 
 
 def model_changed(flag, model, **kwargs):
@@ -35,17 +37,35 @@ class ModelView(_ModelView):
     def __init__(self, model, name=None,
                  category=None, endpoint=None, url=None, static_folder=None,
                  menu_class_name=None, menu_icon_type=None, menu_icon_value=None):
+        # 初始化字段标识
+        self.init_column_labels(model)
+        # 初始化字段类型格式化
+        self.init_column_formatters(model)
 
-        #初始化类型格式化
-        for field in model._fields:
-            attr = getattr(model, field)
-            if type(attr) == StringField:
-                self.column_formatters.setdefault(attr.name, formatter_len(40))
+
         super(ModelView, self).__init__(model, name, category, endpoint, url, static_folder,
                                         menu_class_name=menu_class_name,
                                         menu_icon_type=menu_icon_type,
                                         menu_icon_value=menu_icon_value)
 
+    def init_column_labels(self, model):
+        """ 初始化标识 """
+        self.column_labels = self.column_labels or dict()
+        self.column_labels.setdefault('id', 'ID')
+        for field in model._fields:
+            if field not in self.column_labels:
+                attr = getattr(model, field)
+                if hasattr(attr, 'verbose_name'):
+                    verbose_name = attr.verbose_name
+                    if verbose_name:
+                        self.column_labels[field] = verbose_name
+
+    def init_column_formatters(self, model):
+        """ 初始化字段类型格式化 """
+        for field in model._fields:
+            attr = getattr(model, field)
+            if type(attr) == StringField:
+                self.column_formatters.setdefault(attr.name, formatter_text(40))
 
     def scaffold_filters(self, name):
         """
@@ -309,3 +329,51 @@ class ModelView(_ModelView):
                 Model that was deleted
         """
         pass
+
+    @contextfunction
+    def get_list_value(self, context, model, name):
+        """
+            Returns the value to be displayed in the list view
+
+            :param context:
+                :py:class:`jinja2.runtime.Context`
+            :param model:
+                Model instance
+            :param name:
+                Field name
+        """
+        column_fmt = self.column_formatters.get(name)
+        if column_fmt is not None:
+            value = column_fmt(self, context, model, name)
+        else:
+            value = self._get_field_value(model, name)
+
+        choices_map = self._column_choices_map.get(name, {})
+        if choices_map:
+            return choices_map.get(value) or value
+
+        if isinstance(value, bool):
+            return formatter_bool(self, value, model, name)
+
+        type_fmt = None
+        for typeobj, formatter in self.column_type_formatters.items():
+            if isinstance(value, typeobj):
+                type_fmt = formatter
+                break
+        if type_fmt is not None:
+            value = type_fmt(self, value)
+
+        return value
+
+    @expose('/ajax/change/', methods=('GET',))
+    def ajax_change(self):
+        """ 异步改变列表中记录的某个字段的值 """
+        id = request.args.get('id', 0, str)
+        val = request.args.get('key', '')
+        name = request.args.get('name', '', str)
+        value = request.args.get('value', '', str)
+        model = self.model
+
+        if not current_user.is_authenticated:
+            return json_error()
+        return json_success()
