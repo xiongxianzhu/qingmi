@@ -12,6 +12,7 @@ from mongoengine.fields import StringField
 from qingmi.contrib.admin.mongoengine.filters import FilterConverter
 from qingmi.contrib.admin.mongoengine import AdminChangeLog
 from qingmi.contrib.admin.mongoengine.form import CustomModelConverter
+from qingmi.admin.formatters import formatter_len
 
 
 def model_changed(flag, model, **kwargs):
@@ -35,7 +36,11 @@ class ModelView(_ModelView):
                  category=None, endpoint=None, url=None, static_folder=None,
                  menu_class_name=None, menu_icon_type=None, menu_icon_value=None):
 
-
+        #初始化类型格式化
+        for field in model._fields:
+            attr = getattr(model, field)
+            if type(attr) == StringField:
+                self.column_formatters.setdefault(attr.name, formatter_len(40))
         super(ModelView, self).__init__(model, name, category, endpoint, url, static_folder,
                                         menu_class_name=menu_class_name,
                                         menu_icon_type=menu_icon_type,
@@ -83,6 +88,7 @@ class ModelView(_ModelView):
         """
         try:
             model = self.model()
+            self.before_model_change(form, model, True)
             form.populate_obj(model)
             self._on_model_change(form, model, True)
             model.save()
@@ -109,6 +115,7 @@ class ModelView(_ModelView):
                 Model instance to update
         """
         try:
+            self.before_model_change(form, model, False)
             form.populate_obj(model)
             self._on_model_change(form, model, False)
             model.save()
@@ -235,6 +242,10 @@ class ModelView(_ModelView):
                     else:
                         return gettext('Failed to update record. %(error)s',
                                        error=error), 500
+
+    def before_model_change(self, form, model, is_created):
+
+        pass
 
     # Model event handlers
     def on_model_change(self, form, model, is_created):
