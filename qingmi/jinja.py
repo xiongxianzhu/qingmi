@@ -3,7 +3,8 @@
 import re
 from datetime import datetime
 from flask import current_app, get_flashed_messages
-from jinja2 import Environment, Markup, escape
+from jinja2 import Environment, Markup
+from xml.sax.saxutils import escape
 
 
 __all__ = [

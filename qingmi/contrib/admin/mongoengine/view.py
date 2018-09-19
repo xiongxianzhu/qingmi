@@ -13,7 +13,7 @@ from mongoengine.fields import StringField
 from qingmi.contrib.admin.mongoengine.filters import FilterConverter
 from qingmi.contrib.admin.mongoengine import AdminChangeLog
 from qingmi.contrib.admin.mongoengine.form import CustomModelConverter
-from qingmi.admin.formatters import formatter_text, formatter_bool
+from qingmi.admin.formatters import formatter_text, bool_formatter
 from qingmi.utils import json_success, json_error
 
 
@@ -31,6 +31,14 @@ model_change_signal.connect(model_changed)
 
 class ModelView(_ModelView):
 
+    page_size = 50
+    can_edit = True
+    can_view_details = True
+    can_delete = True
+    edit_modal = True
+    details_modal = True
+
+    column_type_formatters = _ModelView.column_type_formatters or dict()
     model_form_converter = CustomModelConverter
     filter_converter = FilterConverter()
 
@@ -352,8 +360,9 @@ class ModelView(_ModelView):
         if choices_map:
             return choices_map.get(value) or value
 
+        # format column value for bool type
         if isinstance(value, bool):
-            return formatter_bool(self, value, model, name)
+            return bool_formatter(self, value, model, name)
 
         type_fmt = None
         for typeobj, formatter in self.column_type_formatters.items():

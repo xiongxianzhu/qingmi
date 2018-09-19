@@ -89,7 +89,7 @@ def formatter_link(func, max_lenth=20, blank=True, cls='', **kwargs):
 
 
 @markupper
-def formatter_bool(view, value, model, name):
+def bool_formatter(view, value, model, name):
     url = view.get_url('.ajax_change')
     val = str(value)
 
@@ -99,5 +99,5 @@ def formatter_bool(view, value, model, name):
             <span class="onoffswitch-inner"></span>
             <span class="onoffswitch-switch"></span>
         </label>
-    </div>""" % (model.id, 'checked' if value else '', model.id, model.id, name, val, url)
+    </div>""" % (model.id+name, 'checked' if value else '', model.id+name, model.id, name, val, url)
     return html_tpl
