@@ -89,15 +89,19 @@ def formatter_link(func, max_lenth=20, blank=True, cls='', **kwargs):
 
 
 @markupper
-def bool_formatter(view, value, model, name):
+def bool_formatter(view, value, model, name, disabled=False, action='list'):
     url = view.get_url('.ajax_change')
     val = str(value)
+    is_disable = 'disabled' if disabled else ''
+    input_id = str(model.id) + '_' + name + '_' +  action
 
     html_tpl = """<div class="onoffswitch">
-        <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="%s" %s>
+        <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="%s" %s %s>
         <label class="onoffswitch-label" for="%s" data-id="%s" data-name="%s" data-value="%s" data-url="%s">
             <span class="onoffswitch-inner"></span>
             <span class="onoffswitch-switch"></span>
         </label>
-    </div>""" % (model.id+name, 'checked' if value else '', model.id+name, model.id, name, val, url)
+    </div>""" % (input_id, 'checked' if value else '',
+                is_disable,
+                input_id, model.id, name, val, url)
     return html_tpl

@@ -1,4 +1,5 @@
 # coding: utf-8
+from datetime import datetime
 from flask import request, flash, redirect
 from flask_admin.babel import gettext
 from flask_admin.base import expose
@@ -49,7 +50,6 @@ class ModelView(_ModelView):
         self.init_column_labels(model)
         # 初始化字段类型格式化
         self.init_column_formatters(model)
-
 
         super(ModelView, self).__init__(model, name, category, endpoint, url, static_folder,
                                         menu_class_name=menu_class_name,
@@ -339,6 +339,41 @@ class ModelView(_ModelView):
         pass
 
     @contextfunction
+    def get_detail_value(self, context, model, name):
+        column_fmt = self.column_formatters.get(name)
+        if column_fmt is not None:
+            try:
+                value = column_fmt(self, context, model, name)
+            except:
+                value = '该对象被删了'
+        else:
+            try:
+                value = self._get_field_value(model, name)
+            except:
+                value = '该对象被删了'
+
+        choices_map = self._column_choices_map.get(name, {})
+        if choices_map:
+            return choices_map.get(value) or value
+
+        # format column value for bool type
+        # if isinstance(value, bool):
+        #     return bool_formatter(self, value, model, name, False, 'detail')
+
+        type_fmt = None
+        for typeobj, formatter in self.column_type_formatters.items():
+            if isinstance(value, typeobj):
+                type_fmt = formatter
+                break
+        if type_fmt is not None:
+            try:
+                value = type_fmt(self, value)
+            except:
+                value = '该对象被删了'
+
+        return value
+
+    @contextfunction
     def get_list_value(self, context, model, name):
         """
             Returns the value to be displayed in the list view
@@ -350,11 +385,22 @@ class ModelView(_ModelView):
             :param name:
                 Field name
         """
+        # print('get_list_value#####', model._fields.get(name))
+        # column = model._fields.get(name)
+        # print('get_list_value#####', type(column))
+        # print('get_list_value#####', column_fmt)
+
         column_fmt = self.column_formatters.get(name)
         if column_fmt is not None:
-            value = column_fmt(self, context, model, name)
+            try:
+                value = column_fmt(self, context, model, name)
+            except:
+                value = '该对象被删了'
         else:
-            value = self._get_field_value(model, name)
+            try:
+                value = self._get_field_value(model, name)
+            except:
+                value = '该对象被删了'
 
         choices_map = self._column_choices_map.get(name, {})
         if choices_map:
@@ -370,9 +416,17 @@ class ModelView(_ModelView):
                 type_fmt = formatter
                 break
         if type_fmt is not None:
-            value = type_fmt(self, value)
+            try:
+                value = type_fmt(self, value)
+            except:
+                value = '该对象被删了'
 
         return value
+
+    def on_field_change(self, model, name, value):
+        model[name] = value
+        if hasattr(model, 'updated_at'):
+            model['updated_at'] = datetime.now()
 
     @expose('/ajax/change/', methods=('GET',))
     def ajax_change(self):
@@ -385,4 +439,20 @@ class ModelView(_ModelView):
 
         if not current_user.is_authenticated:
             return json_error()
-        return json_success()
+
+        if not val:
+            val = False if value == 'False' else True
+        if type(val) == int:
+            val = int(val)
+
+        obj = model.objects(id=id).first()
+        if obj:
+            before_data = obj[name]
+            self.on_field_change(obj, name, val)
+            obj.save()
+            # model_signals.send(
+            #     'dropdown', model=model, key=name,
+            #     before_data=before_data, after_data=val, id=id)
+            return json_success()
+
+        return json_error(msg='该记录不存在')
