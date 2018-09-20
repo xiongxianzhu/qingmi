@@ -12,3 +12,4 @@ Flask-Admin==1.5.2
 Flask-Login==0.4.1
 ipython==6.4.0
 blinker==1.4
+oss2==2.5.0

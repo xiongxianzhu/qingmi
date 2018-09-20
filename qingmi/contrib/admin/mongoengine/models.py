@@ -4,7 +4,6 @@ import random
 from datetime import datetime
 from werkzeug.utils import cached_property
 from qingmi.base import db, bcrypt
-from qingmi.model import View
 from qingmi.utils import get_ip, get_useragent
 
 
@@ -94,6 +93,36 @@ class AdminGroup(db.Document):
         return [x.name for x in self.can_delete]
 
 
+class View(db.Document):
+    """ 视图 """
+
+    TYPE = db.choices(DEFAULT='默认', MODEL='模型', CATEGORY='分类')
+
+    name = db.StringField(max_length=128, verbose_name='名称')
+    desc = db.StringField(max_length=128, verbose_name='描述')
+    view_type = db.StringField(default=TYPE.DEFAULT, choices=TYPE.CHOICES,
+                                verbose_name='类型')
+    # model = db.ReferenceField('Model', verbose_name='模型')
+    menu_icon = db.StringField(max_length=128, verbose_name='图标')
+    page_size = db.IntField(default=50, verbose_name='每页记录数')
+    can_create = db.BooleanField(default=True, verbose_name='允许创建')
+    can_edit = db.BooleanField(default=True, verbose_name='允许编辑')
+    can_delete = db.BooleanField(default=True, verbose_name='允许删除')
+    can_view_details = db.BooleanField(default=False, verbose_name='允许查看详情')
+    can_export = db.BooleanField(default=False, verbose_name='允许导出')
+    # column_list = db.ListField(db.StringField(), verbose_name='显示列表字段')
+    # column_exclude_list = db.ListField(db.StringField(), verbose_name='隐藏列表字段')
+    column_center_list = db.ListField(db.StringField(), verbose_name='居中列表')
+    created_at = db.DateTimeField(default=datetime.now, verbose_name='创建时间')
+    updated_at = db.DateTimeField(default=datetime.now, verbose_name='更新时间')
+
+    def __repr__(self):
+        return '<View {name!r}>'.format(name=self.name)
+
+    def __unicode__(self):
+        return self.name
+
+
 class AdminLoginLog(db.Document):
     """ 管理员登录日志 """
 
@@ -147,27 +176,42 @@ class AdminChangeLog(db.Document):
                         useragent=ua, ip=ip).save()
 
     @staticmethod
-    def change_data(user, model, before, after, **kwargs):
+    def change_data(user, model, **kwargs):
         """ 变更数据 """
-        # before = dict(id=model.id)
-        # after = dict(id=model.id)
-        # if kwargs.get('form'):
-        #     try:
-        #         for k, v in kwargs.get('form').data.items():
-        #             if v != model[k]:
-        #                 before[k] = model[k]
-        #                 after[k] = v
-        #     except:
-        #         pass
-        # else:
-        #     before = model.to_mongo()
-        before_data = before.to_mongo()
-        if kwargs.get('log_type') == AdminChangeLog.TYPE.DELETE:
-            after_data = ''
+        before = dict(id=model.id)
+        after = dict(id=model.id)
+        if kwargs.get('form'):
+            try:
+                for k, v in kwargs.get('form').data.items():
+                    if v != model[k]:
+                        before[k] = model[k]
+                        after[k] = v
+            except:
+                pass
         else:
-            after_data = after.to_mongo()
+            before = model.to_mongo()
+        if kwargs.get('log_type') == AdminChangeLog.TYPE.DELETE:
+            after = ''
         AdminChangeLog.log(
-            user=user, log_type=kwargs.get('log_type'),
+            user=user,
+            log_type=kwargs.get('log_type'),
             model=model.__class__.__name__,
-            before_data=str(before_data), after_data=str(after_data))
+            before_data=str(before),
+            after_data=str(after),
+        )
 
+    @staticmethod
+    def ajax_change(user, model, **kwargs):
+        before_data = dict(id=kwargs.get('id'))
+        after_data = dict(id=kwargs.get('id'))
+        key = kwargs.get('key')
+        before_data[key] = kwargs.get('before_data')
+        after_data[key] = kwargs.get('after_data')
+
+        AdminChangeLog.log(
+            user=user,
+            model=model.__name__,
+            before_data=str(before_data),
+            after_data=str(after_data),
+            log_type=AdminChangeLog.TYPE.EDIT,
+        )

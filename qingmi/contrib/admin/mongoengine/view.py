@@ -20,11 +20,10 @@ from qingmi.utils import json_success, json_error
 
 def model_changed(flag, model, **kwargs):
     user = current_user.id
-    if flag == 'update':
+    if flag == 'change_data':
         AdminChangeLog.change_data(user, model=model, **kwargs)
-    elif flag == 'dropdown':
-        # AdminChangeLog.dropdown_modify(user, model=model, **kwargs)
-        AdminChangeLog.change_data(user, model=model, **kwargs)
+    elif flag == 'ajax_change':
+        AdminChangeLog.ajax_change(user, model=model, **kwargs)
 
 model_change_signal = signal('model-change-signal')
 model_change_signal.connect(model_changed)
@@ -271,12 +270,15 @@ class ModelView(_ModelView):
                         return gettext('Failed to update record. %(error)s',
                                        error=error), 500
 
-    def before_model_change(self, form, model, is_created):
+    def before_model_change(self, form, model, is_created=False):
 
-        pass
+        model_change_signal.send('change_data', model=model,
+            form=form,
+            log_type=AdminChangeLog.TYPE.CREATE \
+            if is_created else AdminChangeLog.TYPE.EDIT)
 
     # Model event handlers
-    def on_model_change(self, form, model, is_created):
+    def on_model_change(self, form, model, is_created=False):
         """
             Perform some actions before a model is created or updated.
 
@@ -292,7 +294,8 @@ class ModelView(_ModelView):
             :param is_created:
                 Will be set to True if model was created and to False if edited
         """
-        pass
+        if hasattr(model, 'updated_at'):
+            model.updated_at = datetime.now()
 
     def after_model_change(self, form, model, is_created):
         """
@@ -321,7 +324,7 @@ class ModelView(_ModelView):
 
             By default do nothing.
         """
-        pass
+        model_change_signal.send('change_data', model=model, log_type=AdminChangeLog.TYPE.DELETE)
 
     def after_model_delete(self, model):
         """
@@ -450,9 +453,8 @@ class ModelView(_ModelView):
             before_data = obj[name]
             self.on_field_change(obj, name, val)
             obj.save()
-            # model_signals.send(
-            #     'dropdown', model=model, key=name,
-            #     before_data=before_data, after_data=val, id=id)
+            model_change_signal.send('ajax_change', model=model, id=id,
+                key=name, before_data=before_data, after_data=val,)
             return json_success()
 
         return json_error(msg='该记录不存在')

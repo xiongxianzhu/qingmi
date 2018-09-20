@@ -4,5 +4,5 @@ from .models import *
 
 
 __all__ = [
-    'Item', 'StatsLog', 'View'
+    'Item', 'StatsLog',
 ]
