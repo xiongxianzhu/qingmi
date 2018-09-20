@@ -14,7 +14,7 @@ from mongoengine.fields import StringField
 from qingmi.contrib.admin.mongoengine.filters import FilterConverter
 from qingmi.contrib.admin.mongoengine import AdminChangeLog
 from qingmi.contrib.admin.mongoengine.form import CustomModelConverter
-from qingmi.admin.formatters import formatter_text, bool_formatter
+from qingmi.admin.formatters import formatter_text, bool_formatter, select_formatter
 from qingmi.utils import json_success, json_error
 
 
@@ -73,6 +73,43 @@ class ModelView(_ModelView):
             attr = getattr(model, field)
             if type(attr) == StringField:
                 self.column_formatters.setdefault(attr.name, formatter_text(40))
+
+    def get_list(self, page, sort_column, sort_desc, search, filters,
+                 execute=True, page_size=None):
+        query = self.get_query()
+        if self._filters:
+            for flt, flt_name, value in filters:
+                f = self._filters[flt]
+                query = f.apply(query, f.clean(value))
+
+        if self._search_supported and search:
+            query = self._search(query, search)
+
+        count = query.count() if not self.simple_list_pager else None
+
+        if sort_column:
+            query = query.order_by('%s%s' % ('-' if sort_desc else '', sort_column))
+        else:
+            order = self._get_default_order()
+            if order:
+                if len(order) <= 1 or order[1] is not True and order[1] is not False:
+                    query = query.order_by(*order)
+                else:
+                    query = query.order_by('%s%s' % ('-' if order[1] else '', order[0]))
+
+        if page_size is None:
+            page_size = self.page_size
+
+        if page_size:
+            query = query.limit(page_size)
+
+        if page and page_size:
+            query = query.skip(page * page_size)
+
+        if execute:
+            query = query.all()
+
+        return count, query
 
     def scaffold_filters(self, name):
         """
@@ -407,11 +444,15 @@ class ModelView(_ModelView):
 
         choices_map = self._column_choices_map.get(name, {})
         if choices_map:
-            return choices_map.get(value) or value
+            if self.can_edit:
+                return select_formatter(self, value, model, name, choices_map) or value
+            else:
+                return choices_map.get(value) or value
 
         # format column value for bool type
         if isinstance(value, bool):
-            return bool_formatter(self, value, model, name)
+            if self.can_edit:
+                return bool_formatter(self, value, model, name)
 
         type_fmt = None
         for typeobj, formatter in self.column_type_formatters.items():

@@ -198,4 +198,4 @@ def get_options(self, view):
     return None
 
 
-# BaseMongoEngineFilter.get_options = get_options
+BaseMongoEngineFilter.get_options = get_options

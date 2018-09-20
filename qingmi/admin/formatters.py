@@ -1,5 +1,6 @@
 # coding: utf-8
 from xml.sax.saxutils import escape, quoteattr
+from markupsafe import Markup
 from qingmi.jinja import markup, markupper
 
 
@@ -105,3 +106,23 @@ def bool_formatter(view, value, model, name, disabled=False, action='list'):
                 is_disable,
                 input_id, model.id, name, val, url)
     return html_tpl
+
+
+@markupper
+def select_formatter(view, value, model, name, choices):
+    url = view.get_url('.ajax_change')
+    selects = ''
+    id = str(model.id)+str(name)
+
+    for k, v in choices.items():
+        select = '<li><a class="btn-formatter" data-key="%s" data-id="%s" data-name="%s" data-url="%s">%s</a></li>' % (k, model.id, name, url, v)
+        selects = selects + select
+
+    html = '''<div class="dropdown" style="min-width: 80px">
+                <button id=%s class="btn btn-block btn-select" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" s>%s
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dLabel" style="min-width:100px">%s</ul>
+            </div>''' % (id, choices.get(str(value) if type(value) is Markup else value), selects)
+
+    return html
