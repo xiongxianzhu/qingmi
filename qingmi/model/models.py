@@ -598,3 +598,15 @@ class StatsLog(db.Document):
             if x[0] <= h <= x[1]:
                 return x
         return default
+
+
+class Image(db.Document):
+    """ 图片 """
+    key = db.StringField(max_length=128, verbose_name='KEY')
+    name = db.StringField(max_length=128, verbose_name='图片名称')
+    image = db.StringField(verbose_name='图片名称')
+    created_at = db.DateTimeField(default=datetime.now, verbose_name='创建时间')
+    updated_at = db.DateTimeField(default=datetime.now, verbose_name='更新时间')
+
+    def __unicode__(self):
+        return '%s-%s' % (self.key, self.name)
