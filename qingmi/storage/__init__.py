@@ -42,7 +42,7 @@ class Storage(object):
 def _get_storage(config):
     t = config.setdefault('storage_type', 'local')
     tpl = "Storage type: %r. Storage type not supported."
-        assert t in storages, tpl % t
+    assert t in storages, tpl % t
 
     if t == 'local':
         return LocalStorage(config)

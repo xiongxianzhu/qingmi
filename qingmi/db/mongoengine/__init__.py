@@ -5,6 +5,7 @@ from flask_mongoengine import (MongoEngine as _MongoEngine,
                                 Document as _Document,
                                 DynamicDocument as _DynamicDocument)
 from . import pagination
+from . import fields
 
 
 class Choices(object):
@@ -25,7 +26,7 @@ class MongoEngine(_MongoEngine):
 
     def __init__(self, app=None, config=None):
         super(MongoEngine, self).__init__(app)
-        # _include_custom(self)
+        _include_custom(self)
 
         self.Document = Document
         self.DynamicDocument = DynamicDocument
@@ -57,7 +58,7 @@ def abstract(model):
 
 
 def _include_custom(obj):
-    for key in fields.__all__:
-        if not hasattr(obj, key):
-            setattr(obj, key, getattr(fields, key))
+    for attr_name in fields.__all__:
+        if not hasattr(obj, attr_name):
+            setattr(obj, attr_name, getattr(fields, attr_name))
     setattr(obj, 'abstract', abstract)
