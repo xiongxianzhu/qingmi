@@ -14,14 +14,16 @@ class Storage(object):
     :param app: Flask app instance
     """
 
-    def __init__(self, app=None):
+    def __init__(self, app=None, config_key='STORAGE_SETTINGS'):
         self._storage = None
+        self.config_key = config_key
         self.app = app
         if app:
             self.init_app(app)
 
-    def init_app(self, app):
-        config = app.config.get('STORAGE_SETTINGS', {})
+    def init_app(self, app, config_key='STORAGE_SETTINGS'):
+        self.config_key = config_key
+        config = app.config.get(config_key, {})
         
         t = config.setdefault('storage_type', 'local')
         tpl = "Storage type: %r. Storage type not supported."
