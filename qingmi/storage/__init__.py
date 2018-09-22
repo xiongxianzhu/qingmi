@@ -24,7 +24,8 @@ class Storage(object):
         config = app.config.get('STORAGE_SETTINGS', {})
         
         t = config.setdefault('storage_type', 'local')
-        assert t in storages, "Storage type not supported."
+        tpl = "Storage type: %r. Storage type not supported."
+        assert t in storages, tpl % t
 
         storage_model = import_string(storages[t])
         self._storage = storage_model(config)
@@ -40,7 +41,8 @@ class Storage(object):
 
 def _get_storage(config):
     t = config.setdefault('storage_type', 'local')
-    assert t in storages, "Storage type not supported."
+    tpl = "Storage type: %r. Storage type not supported."
+        assert t in storages, tpl % t
 
     if t == 'local':
         return LocalStorage(config)

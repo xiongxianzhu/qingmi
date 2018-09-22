@@ -23,7 +23,7 @@ class ConfigItem(object):
         template = "ConfigItem(%r, namespace=%r, default=%r, required=%r)"
         return template % (self.name, self.name, self.default, self.required)
 
-    def __get__(self, instance):
+    def __get__(self, instance, owner):
         if instance is None:
             return self
         namespace = self._namespace(instance)

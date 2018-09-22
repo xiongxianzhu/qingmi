@@ -21,15 +21,16 @@ class LocalStorage(BaseStorage):
         super(LocalStorage, self).__init__(config)
         self.baseurl = self.config.get('base_url')
 
-    def url(self, filename):
-        return os.path.join(self.baseurl, filename)
-        # return urljoin(self.baseurl, filename)
+    def path(self, filename, base_dir=None):
+        filename = os.path.join(base_dir or self.base_dir, filename)
+        file_path = urljoin(self.base_path, filename)
+        return file_path
 
     def read(self, filename):
-        return file.read(self.url(filename))
+        return file.read(self.path(filename))
 
     def write(self, filename, body):
-        return file.write(self.url(filename), body)
+        return file.write(self.path(filename), body)
 
     def delete(self, filename):
-        return file.delete(self.url(filename))
+        return file.delete(self.path(filename))

@@ -3,6 +3,7 @@
 import os
 import logging
 from werkzeug import FileStorage
+from qingmi._compat import urljoin
 
 
 __all__ = (
@@ -42,12 +43,12 @@ class BaseStorage(object):
         self.config = config
         self.extensions = self.config.get('extensions', IMAGES)
 
-    def url(self, filename):
+    def path(self, filename):
         """Generate the url for a filename.
         :param filename: filename for generating the url....
         """
-        urlbase = self.config.get('base_url')
-        return urljoin(urlbase, filename)
+        base_path = self.config.get('base_path')
+        return urljoin(base_path, filename)
 
     def extension_allowed(self, extname):
         if not self.extensions:
