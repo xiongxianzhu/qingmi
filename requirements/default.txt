@@ -13,4 +13,3 @@ Flask-Login==0.4.1
 ipython==6.4.0
 blinker==1.4
 oss2==2.5.0
-qiniu==7.2.2
