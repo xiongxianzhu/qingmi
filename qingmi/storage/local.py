@@ -17,8 +17,8 @@ class LocalStorage(BaseStorage):
     base_dir = ConfigItem('base_dir', default='')
     base_url = ConfigItem('base_url', default='')
 
-    def __init__(self, extensions=None, config=None):
-        super(LocalStorage, self).__init__(extensions, config)
+    def __init__(self, config=None):
+        super(LocalStorage, self).__init__(config)
         self.baseurl = self.config.get('base_url')
 
     def url(self, filename):

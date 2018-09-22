@@ -21,14 +21,13 @@ class Storage(object):
             self.init_app(app)
 
     def init_app(self, app):
-        t = app.config.setdefault('STORAGE_TYPE', 'local')
+        config = app.config.get('STORAGE_SETTINGS', {})
+        
+        t = config.setdefault('storage_type', 'local')
         assert t in storages, "Storage type not supported."
 
         storage_model = import_string(storages[t])
-        extensions = app.config.get('STORAGE_EXTENSIONS', None)
-        config = app.config.get('STORAGE_SETTINGS', {})
-
-        self._storage = storage_model(extensions, config)
+        self._storage = storage_model(config)
 
     def __getattr__(self, key):
         try:
@@ -40,7 +39,10 @@ class Storage(object):
 
 
 def _get_storage(config):
-    if config['storage_type'] == 'local':
+    t = config.setdefault('storage_type', 'local')
+    assert t in storages, "Storage type not supported."
+
+    if t == 'local':
         return LocalStorage(config)
     raise ValueError('Storage type (%s) not supported.' % config['type'])
 
