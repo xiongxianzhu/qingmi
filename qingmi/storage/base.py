@@ -4,6 +4,7 @@ import os
 import logging
 from werkzeug import FileStorage
 from qingmi._compat import urljoin
+from .utils import ConfigItem
 
 
 __all__ = (
@@ -39,16 +40,24 @@ EXECUTABLES = ('so', 'ext', 'dll')
 
 class BaseStorage(object):
 
+    storage_type = ConfigItem('storage_type', required=True)
+    base_link = ConfigItem('base_link', default='')
+    base_extensions = ConfigItem('base_extensions', default=dict())
+
+
     def __init__(self, config=None):
         self.config = config
-        self.extensions = self.config.get('extensions', IMAGES)
+        self.extensions = self.base_extensions or IMAGES
+        # self.extensions = self.config.get('extensions', IMAGES)
 
-    def path(self, filename):
+    def get_path(self, filename):
         """Generate the url for a filename.
         :param filename: filename for generating the url....
         """
-        base_path = self.config.get('base_path')
-        return urljoin(base_path, filename)
+        return filename
+
+    def get_link(self, filename, **kwargs):
+        return self.base_link % filename
 
     def extension_allowed(self, extname):
         if not self.extensions:

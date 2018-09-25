@@ -5,6 +5,8 @@ from flask_admin.contrib.mongoengine.form import (CustomModelConverter
             as _CustomModelConverter)
 from flask_admin.model.fields import AjaxSelectField
 from wtforms import fields as f
+from qingmi.form.fields import XFileField, XImageField
+
 
 class CustomModelConverter(_CustomModelConverter):
     """
@@ -20,3 +22,13 @@ class CustomModelConverter(_CustomModelConverter):
         if textarea_field:
             return f.TextAreaField(**kwargs)
         return f.StringField(**kwargs)
+
+    @orm.converts('XFileField')
+    def conv_xfile(self, model, field, kwargs):
+        return XFileField(max_size=field.max_size, extensions=field.extensions,
+                         place=field.place, **kwargs)
+
+    @orm.converts('XImageField')
+    def conv_ximage(self, model, field, kwargs):
+        return XImageField(max_size=field.max_size, extensions=field.extensions,
+                          place=field.place, **kwargs)

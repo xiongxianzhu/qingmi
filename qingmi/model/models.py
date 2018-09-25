@@ -604,7 +604,8 @@ class Image(db.Document):
     """ 图片 """
     key = db.StringField(max_length=128, verbose_name='KEY')
     name = db.StringField(max_length=128, verbose_name='图片名称')
-    image = db.StringField(verbose_name='图片名称')
+    image = db.XImageField(verbose_name='图片')
+    # image = db.StringField(verbose_name='图片名称')
     created_at = db.DateTimeField(default=datetime.now, verbose_name='创建时间')
     updated_at = db.DateTimeField(default=datetime.now, verbose_name='更新时间')
 

@@ -46,9 +46,9 @@ def datetimeformat(value, format='%Y-%m-%d %H:%M:%S'):
     """ 时间格式化 """
     return value.strftime(format)
 
-def parse_datetime(input):
+def parse_datetime(data):
     """ 格式化日期时间 """
-    diff = datetime.now() - input
+    diff = datetime.now() - data
     if diff.days in [0, -1]:
         seconds = diff.days * 86400 + diff.seconds
         if seconds < -3600:
