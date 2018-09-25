@@ -10,7 +10,7 @@ from .generators import RandomGenerator
 
 
 __all__ = [
-    'XFileField', 'XImageField',
+    'XFileField', 'XImageField', 'FileProxy', 'ImageProxy',
 ]
 
 
@@ -131,6 +131,7 @@ class XFileField(BaseField):
 
         :param config_key:  storage config key in config of app.
         :param filename_generator: filename generator.
+        :param auto_remove: upload new file with/without remove old file .
         """
         self.max_size = max_size
         self.is_rename = is_rename
@@ -161,7 +162,7 @@ class XFileField(BaseField):
     def is_auto_remove(self):
         if self.auto_remove:
             return self.auto_remove
-        return current_app.config.get(self.config_key).get('auto_remove', True)
+        return current_app.config.get(self.config_key).get('auto_remove', False)
 
     def get_path(self, filename):
         if filename:
@@ -207,7 +208,7 @@ class XFileField(BaseField):
         if instance is None:
             return self
         value = instance._data.get(self.name)
-        print('__get__====', instance._data, self.name)
+        # print('__get__====', instance._data, self.name)
         if not isinstance(value, self.proxy_class) or value is None:
             value = self.proxy_class(self, value)
             instance._data[self.name] = value

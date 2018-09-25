@@ -7,6 +7,7 @@ from flask_admin.contrib.mongoengine import ModelView as _ModelView
 from flask_admin.model.base import BaseModelView
 from flask_admin.helpers import get_redirect_target
 from flask_admin._compat import string_types
+from flask_admin.model.typefmt import bool_formatter as _bool_formatter
 from blinker import signal
 from jinja2 import contextfunction
 from flask_login import current_user
@@ -14,8 +15,10 @@ from mongoengine.fields import StringField
 from qingmi.contrib.admin.mongoengine.filters import FilterConverter
 from qingmi.contrib.admin.mongoengine import AdminChangeLog
 from qingmi.contrib.admin.mongoengine.form import CustomModelConverter
-from qingmi.admin.formatters import formatter_text, bool_formatter, select_formatter
+from qingmi.admin.formatters import (formatter_text, bool_formatter,
+                    select_formatter, file_formatter, file_link_formatter)
 from qingmi.utils import json_success, json_error
+from qingmi.db.mongoengine.fields import FileProxy
 
 
 def model_changed(flag, model, **kwargs):
@@ -39,6 +42,13 @@ class ModelView(_ModelView):
     details_modal = True
 
     column_type_formatters = _ModelView.column_type_formatters or dict()
+    column_type_formatters[FileProxy] = file_formatter
+
+    column_type_formatters_detail = _ModelView.column_type_formatters_detail or dict()
+    column_type_formatters_detail[bool] = _bool_formatter
+    column_type_formatters_detail[FileProxy] = file_formatter
+    # column_type_formatters_detail[FileProxy] = file_link_formatter
+
     model_form_converter = CustomModelConverter
     filter_converter = FilterConverter()
 
@@ -380,7 +390,11 @@ class ModelView(_ModelView):
 
     @contextfunction
     def get_detail_value(self, context, model, name):
-        column_fmt = self.column_formatters.get(name)
+        column_formatters = self.column_formatters_detail
+        column_type_formatters = self.column_type_formatters_detail
+
+
+        column_fmt = column_formatters.get(name)
         if column_fmt is not None:
             try:
                 value = column_fmt(self, context, model, name)
@@ -401,7 +415,7 @@ class ModelView(_ModelView):
         #     return bool_formatter(self, value, model, name, False, 'detail')
 
         type_fmt = None
-        for typeobj, formatter in self.column_type_formatters.items():
+        for typeobj, formatter in column_type_formatters.items():
             if isinstance(value, typeobj):
                 type_fmt = formatter
                 break
