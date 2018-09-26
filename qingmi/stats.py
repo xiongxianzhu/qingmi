@@ -8,6 +8,61 @@ from datetime import datetime, timedelta
 from qingmi.model import StatsLog
 
 
+def get_date_ranger(date_start, date_end):
+    """获取日期区间
+    :param date_start
+    :param date_end
+    """
+    dates = []
+    start = datetime.strftime(date_start, '%Y-%m-%d')
+    end = datetime.strftime(date_end, '%Y-%m-%d')
+    size = (end - start).days
+
+    if size > 0:
+        for i in range(size+1):
+            dates.append((start + timedelta(days=i)).strftime('%Y-%m-%d'))
+    return dates
+
+
+def get_date(key='day'):
+    """获取日期
+    :param key
+    """
+    day = request.args.get(key, '')
+    try:
+        datetime.strptime(day, '%Y-%m-%d')
+    except ValueError:
+        day = time.strftime('%Y-%m-%d')
+    return day
+
+
+def get_dates(stats=True, start_key='start', end_key='end', start='', end=''):
+    """获取日期区间两端的日期
+    """
+    if callable(start):
+        start = start()
+    if callable(end):
+        end = end()
+
+    start = request.args.get(start_key, start)
+    end = request.args.get(end_key, end)
+
+    try:
+        datetime.strptime(start, '%Y-%m-%d')
+        datetime.strptime(end, '%Y-%m-%d')
+    except (ValueError, TypeError):
+        start = (datetime.now() - timedelta(days=6)).strftime('%Y-%m-%d')
+        end = datetime.now().strftime('%Y-%m-%d')
+
+    if stats is True:
+        days = get_date_ranger(start, end)
+        if len(days) == 0:
+            start = (datetime.now() - timedelta(days=6)).strftime('%Y-%m-%d')
+            end = datetime.now().strftime('%Y-%m-%d')
+
+    return start, end
+
+
 class Stats(object):
     """ 统计助手 """
 
