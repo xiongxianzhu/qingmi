@@ -1,12 +1,12 @@
 # coding: utf-8
-from wtforms.fields import FileField
+from wtforms.fields import FileField, TextAreaField
 from wtforms.utils import unset_value
 from wtforms.validators import ValidationError
-from .widgets import FileInput, ImageInput
+from .widgets import FileInput, ImageInput, WangEditor
 
 
 __all__ = [
-    'XFileField', 'XImageField',
+    'XFileField', 'XImageField', 'WangEditorField',
 ]
 
 DEFAULT_EXTENSIONS = ['txt', 'bz2', 'gz', 'tar', 'zip', 'rar', 'apk', 'jpg', 'jpeg', 'png', 'gif', 'bmp']
@@ -112,4 +112,6 @@ class XImageField(XFileField):
             extensions=DEFAULT_IMAGE_EXTENSIONS, place=None, **kwargs):
         super(XImageField, self).__init__(label=label, **kwargs)
 
-    
+
+class WangEditorField(TextAreaField):
+    widget = WangEditor()
