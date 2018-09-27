@@ -1,6 +1,7 @@
 # coding: utf-8
 """
 统计助手(statistics helper)
+使用了开源项目: https://github.com/highcharts/highcharts， 作为统计图表
 """
 
 import time
@@ -253,7 +254,7 @@ class StatsHelper(object):
         start = start - timedelta(minutes=start.minute, seconds=start.second,
                                     microseconds=start.microsecond)
         end = start + timedelta(hours=1)
-        seld.one('hour', start.strftime('%Y-%m-%d'), start, end, hour=start.hour)
+        self.one('hour', start.strftime('%Y-%m-%d'), start, end, hour=start.hour)
         if day:
             self.day(start)
 
@@ -264,19 +265,28 @@ class StatsHelper(object):
             self.hour(now, day=now.hour == 0)
             now -= timedelta(hours=1)
 
-    def run(self, start=datetime(2018, 1, 1), minutes=1):
+    def run(self, mode='last', start=datetime(2018, 1, 1), minutes=1):
         self.start = start
         self.minutes = minutes
 
-        def run_stats(mode='last'):
-            if mode == 'last':
-                start = time.time()
-                print('stats start:', datetime.now())
-                self.hour(datetime.now())
-                print('stats takes:', time.time() - start)
-            elif mode == 'all':
-                self.all()
+        if mode == 'last':
+            start = time.time()
+            print('stats start:', datetime.now())
+            self.hour(datetime.now())
+            print('stats takes:', time.time() - start)
+        elif mode == 'all':
+            self.all()
 
-        return run_stats
+        # def run_stats(mode='last'):
+        #     print('=====run_stats=====')
+        #     if mode == 'last':
+        #         start = time.time()
+        #         print('stats start:', datetime.now())
+        #         self.hour(datetime.now())
+        #         print('stats takes:', time.time() - start)
+        #     elif mode == 'all':
+        #         self.all()
+
+        # return run_stats
 
 
