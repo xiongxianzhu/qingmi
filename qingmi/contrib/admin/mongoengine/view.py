@@ -1,8 +1,9 @@
 # coding: utf-8
 from datetime import datetime
 from flask import request, flash, redirect
-from flask_admin.babel import gettext
+from flask_admin.babel import gettext, lazy_gettext
 from flask_admin.base import expose
+from flask_admin.actions import action
 from flask_admin.contrib.mongoengine import ModelView as _ModelView
 from flask_admin.model.base import BaseModelView
 from flask_admin.helpers import get_redirect_target
@@ -11,14 +12,16 @@ from flask_admin.model.typefmt import bool_formatter as _bool_formatter
 from blinker import signal
 from jinja2 import contextfunction
 from flask_login import current_user
-from mongoengine.fields import StringField
-from qingmi.contrib.admin.mongoengine.filters import FilterConverter
+from mongoengine.fields import StringField, ReferenceField
+from qingmi.contrib.admin.mongoengine.filters import FilterConverter, ObjectIdFilterEqual, FilterEqual
 from qingmi.contrib.admin.mongoengine import AdminChangeLog
+from qingmi.contrib.admin.mongoengine.ajax import process_ajax_references
 from qingmi.contrib.admin.mongoengine.form import CustomModelConverter
 from qingmi.admin.formatters import (formatter_text, bool_formatter,
                     select_formatter, file_formatter, file_link_formatter)
 from qingmi.utils import json_success, json_error
 from qingmi.db.mongoengine.fields import FileProxy
+from qingmi.admin.formatters import formatter_link
 
 
 def model_changed(flag, model, **kwargs):
@@ -59,6 +62,15 @@ class ModelView(_ModelView):
         self.init_column_labels(model)
         # 初始化字段类型格式化
         self.init_column_formatters(model)
+
+        # self._init_referenced = False
+
+        # self.form_ajax_refs = self.form_ajax_refs or dict()
+        # for field in model._fields:
+        #     attr = getattr(model, field)
+        #     if type(attr) == ReferenceField:
+        #         if field not in self.form_ajax_refs and hasattr(attr.document_type, 'ajax_ref'):
+        #             self.form_ajax_refs[field] = dict(fields=attr.document_type.ajax_ref, page_size=20)
 
         super(ModelView, self).__init__(model, name, category, endpoint, url, static_folder,
                                         menu_class_name=menu_class_name,
@@ -401,6 +413,8 @@ class ModelView(_ModelView):
             except:
                 value = '该对象被删了'
         else:
+            # value = self._get_field_value(model, name)
+            # 没有formatters的字段也会出现ReferenceField类型的字段被删除的情况
             try:
                 value = self._get_field_value(model, name)
             except:
@@ -409,10 +423,6 @@ class ModelView(_ModelView):
         choices_map = self._column_choices_map.get(name, {})
         if choices_map:
             return choices_map.get(value) or value
-
-        # format column value for bool type
-        # if isinstance(value, bool):
-        #     return bool_formatter(self, value, model, name, False, 'detail')
 
         type_fmt = None
         for typeobj, formatter in column_type_formatters.items():
@@ -426,6 +436,37 @@ class ModelView(_ModelView):
                 value = '该对象被删了'
 
         return value
+
+
+    # def get_filter_tpl(self, attr):
+    #     for view in self.admin._views:
+    #         if hasattr(view, 'model') and attr.document_type == view.model and view._filter_args:
+    #             for idx, flt in view._filter_args.values():
+    #                 if type(flt) == ObjectIdFilterEqual:
+    #                     return ('/admin/%s/?flt0_' % view.model.__name__.lower()) + str(idx) + '=%s'
+    #                 if flt.column.primary_key:
+    #                     cls = type(flt).__name__
+    #                     if 'EqualFilter' in cls and 'Not' not in cls:
+    #                         return ('/admin/%s/?flt0_' % view.model.__name__.lower()) + str(idx) + '=%s'
+    #                 if type(flt) == FilterEqual:
+    #                     return ('/admin/%s/?flt0_' % view.model.__name__.lower()) + str(idx) + '=%s'
+
+    # def set_filter_formatter(self, attr):
+
+    #     def formatter(tpl, name):
+    #         return lambda m: (getattr(m, name), tpl % str(getattr(m, name).id if getattr(m, name) else ''))
+
+    #     tpl = self.get_filter_tpl(attr)
+    #     if tpl:
+    #         f = formatter_link(formatter(tpl, attr.name))
+    #         self.column_formatters.setdefault(attr.name, f)
+
+    # def init_referenced(self):
+    #     #初始化类型格式化
+    #     for field in self.model._fields:
+    #         attr = getattr(self.model, field)
+    #         if type(attr) == ReferenceField:
+    #             self.set_filter_formatter(attr)
 
     @contextfunction
     def get_list_value(self, context, model, name):
@@ -443,6 +484,9 @@ class ModelView(_ModelView):
         # column = model._fields.get(name)
         # print('get_list_value#####', type(column))
         # print('get_list_value#####', column_fmt)
+        # if not self._init_referenced:
+        #     self._init_referenced = True
+        #     self.init_referenced()
 
         column_fmt = self.column_formatters.get(name)
         if column_fmt is not None:
@@ -451,6 +495,7 @@ class ModelView(_ModelView):
             except:
                 value = '该对象被删了'
         else:
+            # value = self._get_field_value(model, name)
             try:
                 value = self._get_field_value(model, name)
             except:
@@ -502,7 +547,6 @@ class ModelView(_ModelView):
             val = False if value == 'False' else True
         if type(val) == int:
             val = int(val)
-
         obj = model.objects(id=id).first()
         if obj:
             before_data = obj[name]
@@ -513,3 +557,5 @@ class ModelView(_ModelView):
             return json_success()
 
         return json_error(msg='该记录不存在')
+
+    

@@ -32,3 +32,17 @@ class CustomModelConverter(_CustomModelConverter):
     def conv_ximage(self, model, field, kwargs):
         return XImageField(max_size=field.max_size, extensions=field.extensions,
                           place=field.place, **kwargs)
+
+    # @orm.converts('ReferenceField')
+    # def conv_Reference(self, model, field, kwargs):
+    #     kwargs['allow_blank'] = not field.required
+
+    #     loader = getattr(self.view, '_form_ajax_refs', {}).get(field.name)
+    #     if loader:
+    #         return AjaxSelectField(loader, **kwargs)
+
+    #     kwargs['widget'] = form.Select2Widget()
+    #     queryset = kwargs.get('queryset')
+    #     if callable(queryset):
+    #         kwargs['queryset'] = queryset(field.document_type)
+    #     return orm.ModelConverter.conv_Reference(self, model, field, kwargs)
