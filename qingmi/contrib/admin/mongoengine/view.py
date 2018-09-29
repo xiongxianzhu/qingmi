@@ -425,6 +425,10 @@ class ModelView(_ModelView):
         if choices_map:
             return choices_map.get(value) or value
 
+        if isinstance(value, str):
+            if value in ['True', 'False']:
+                return _bool_formatter(self, bool(value))
+
         type_fmt = None
         for typeobj, formatter in column_type_formatters.items():
             if isinstance(value, typeobj):
