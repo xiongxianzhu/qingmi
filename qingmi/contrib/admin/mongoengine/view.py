@@ -1,7 +1,8 @@
 # coding: utf-8
+import time
 from datetime import datetime
 from flask import request, flash, redirect
-from flask_admin.babel import gettext, lazy_gettext
+from flask_admin.babel import gettext, ngettext, lazy_gettext
 from flask_admin.base import expose
 from flask_admin.actions import action
 from flask_admin.contrib.mongoengine import ModelView as _ModelView
@@ -558,4 +559,22 @@ class ModelView(_ModelView):
 
         return json_error(msg='该记录不存在')
 
-    
+    # @action('delete',
+    #         lazy_gettext('Delete'),
+    #         lazy_gettext('Are you sure you want to delete selected records?'))
+    # def action_delete(self, ids):
+    #     try:
+    #         count = 0
+
+    #         all_ids = [self.object_id_converter(pk) for pk in ids]
+    #         for obj in self.get_query().in_bulk(all_ids).values():
+    #             count += self.delete_model(obj)
+
+    #         flash(ngettext('Record was successfully deleted.',
+    #                        '%(count)s records were successfully deleted.',
+    #                        count,
+    #                        count=count), 'success')
+    #     except Exception as ex:
+    #         if not self.handle_view_exception(ex):
+    #             flash(gettext('Failed to delete records. %(error)s', error=str(ex)),
+    #                   'error')
