@@ -20,7 +20,8 @@ class LocalStorage(BaseStorage):
 
     def get_path(self, filename, base_dir=None):
         filename = os.path.join(base_dir or self.base_dir, filename)
-        file_path = urljoin(self.base_path, filename)
+        file_path = os.path.join(self.base_path, filename)
+        # file_path = urljoin(self.base_path, filename)
         return file_path
 
     def read(self, filename):
