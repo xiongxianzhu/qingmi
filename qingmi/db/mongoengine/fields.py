@@ -186,7 +186,6 @@ class XFileField(BaseField):
             filename = self.filename_generator()
             if format:
                 filename = '{}.{}'.format(filename, format)
-        # print('put=====', type(filename), filename)
         self.storage.write(filename, stream.read())
         return filename
 
@@ -208,15 +207,12 @@ class XFileField(BaseField):
         if instance is None:
             return self
         value = instance._data.get(self.name)
-        # print('__get__====', instance._data, self.name)
         if not isinstance(value, self.proxy_class) or value is None:
             value = self.proxy_class(self, value)
             instance._data[self.name] = value
         return instance._data[self.name]
 
     def __set__(self, instance, value):
-        # value == instance._data.get(self.name)
-        # print('__set__====', value, instance._data.get(self.name))
         self.register_signals(instance)
 
         key = self.name
