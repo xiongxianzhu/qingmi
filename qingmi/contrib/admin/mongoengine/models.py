@@ -99,7 +99,7 @@ class View(db.Document):
     TYPE = db.choices(DEFAULT='默认', MODEL='模型', CATEGORY='分类')
 
     name = db.StringField(max_length=128, verbose_name='名称')
-    desc = db.StringField(max_length=128, verbose_name='描述')
+    label = db.StringField(max_length=128, verbose_name='标签')
     view_type = db.StringField(default=TYPE.DEFAULT, choices=TYPE.CHOICES,
                                 verbose_name='类型')
     # model = db.ReferenceField('Model', verbose_name='模型')
@@ -121,6 +121,9 @@ class View(db.Document):
 
     def __unicode__(self):
         return self.name
+
+    def process(self, admin, view):
+        pass
 
 
 class AdminLoginLog(db.Document):
