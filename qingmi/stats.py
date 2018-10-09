@@ -71,7 +71,9 @@ def get_value_list(key, days, uid=None):
         query['uid'] = uid
 
     length = len(days)
-    value_list = [0 for i in range(length)]
+    value_list = [0] * length
+    # 上面方式优雅， 但如果列表包含了列表， 上样这样做会产生浅拷贝， 则采用以下方式
+    # value_list = [0 for i in range(length)]
     items = StatsLog.objects(**query)
     for item in items:
         value_list[days.index(item.day)] = item.value
@@ -244,12 +246,22 @@ class StatsHelper(object):
         for f in self.funcs:
             f(key, day, start, end, hour)
 
-    def day(self, day):
-        start = datetime.strptime(str(day).split(' ')[0], '%Y-%m-%d')
-        end = datetime.strptime(str(day + timedelta(days=1)).split(' ')[0], '%Y-%m-%d')
-        self.one('date', day.strftime('%Y-%m-%d'), start, end)
+    def day(self, start_day):
+        start = datetime.strptime(str(start_day).split(' ')[0], '%Y-%m-%d')
+        end = datetime.strptime(str(start_day + timedelta(days=1)).split(' ')[0], '%Y-%m-%d')
+        self.one('date', start_day.strftime('%Y-%m-%d'), start, end)
 
-    def hour(self, now, day=True):
+    def recent_week(self, start_day):
+        start = datetime.strptime(str(start_day - timedelta(days=6)).split(' ')[0], '%Y-%m-%d')
+        end = datetime.strptime(str(start_day + timedelta(days=1)).split(' ')[0], '%Y-%m-%d')
+        self.one('recent_week', start_day.strftime('%Y-%m-%d'), start, end)
+
+    def recent_month(self, start_day):
+        start = datetime.strptime(str(start_day - timedelta(days=30)).split(' ')[0], '%Y-%m-%d')
+        end = datetime.strptime(str(start_day + timedelta(days=1)).split(' ')[0], '%Y-%m-%d')
+        self.one('recent_month', start_day.strftime('%Y-%m-%d'), start, end)
+
+    def hour(self, now, day=True, by_week=True, by_month=True):
         start = now - timedelta(minutes=self.minutes)
         start = start - timedelta(minutes=start.minute, seconds=start.second,
                                     microseconds=start.microsecond)
@@ -257,6 +269,11 @@ class StatsHelper(object):
         self.one('hour', start.strftime('%Y-%m-%d'), start, end, hour=start.hour)
         if day:
             self.day(start)
+        if by_week:
+            self.recent_week(start)
+        if by_month:
+            self.recent_month(start)
+
 
     def all(self):
         now = datetime.now()
