@@ -56,6 +56,8 @@ class ModelView(_ModelView):
     model_form_converter = CustomModelConverter
     filter_converter = FilterConverter()
 
+    column_disable_list = []
+
     def __init__(self, model, name=None,
                  category=None, endpoint=None, url=None, static_folder=None,
                  menu_class_name=None, menu_icon_type=None, menu_icon_value=None):
@@ -508,7 +510,7 @@ class ModelView(_ModelView):
 
         choices_map = self._column_choices_map.get(name, {})
         if choices_map:
-            if self.can_edit:
+            if self.can_edit and name not in self.column_disable_list:
                 return select_formatter(self, value, model, name, choices_map) or value
             else:
                 return choices_map.get(value) or value
