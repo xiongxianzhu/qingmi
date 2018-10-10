@@ -33,7 +33,13 @@ class Item(db.Document):
         """ 取值(整型/浮点型) """
         item = Item.objects(key=key).first()
         if item:
-            return item.value
+            try:
+                if item.data_type == Item.TYPE.INT:
+                    return int(item.value)
+                if item.data_type == Item.TYPE.FLOAT:
+                    return float(item.value)
+            except ValueError as e:
+                return 0
         data_type = Item.TYPE.FLOAT if type(value) is float else Item.TYPE.INT
         Item(key=key, data_type=data_type, value=value, name=name).save()
         return value
@@ -73,7 +79,7 @@ class Item(db.Document):
         """ 取值(字符串) """
         item = Item.objects(key=key).first()
         if item:
-            return item.value
+            return str(item.value)
         Item(key=key, data_type=Item.TYPE.STRING, value=value, name=name).save()
         return value
 
