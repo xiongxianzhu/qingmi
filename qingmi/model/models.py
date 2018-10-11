@@ -311,7 +311,13 @@ class StatsLog(db.Document):
             if name:
                 item.name = name
                 item.save()
-            return item.value
+            try:
+                if item.data_type == Item.TYPE.INT:
+                    return int(item.value)
+                if item.data_type == Item.TYPE.FLOAT:
+                    return float(item.value)
+            except ValueError as e:
+                return 0
         if save:
             data_type = StatsLog.TYPE.FLOAT if type(value) is float else StatsLog.TYPE.INT
             StatsLog(key=key, data_type=data_type, uid=uid, xid=xid, label=label, day=day,

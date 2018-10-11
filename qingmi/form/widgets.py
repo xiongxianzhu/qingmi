@@ -92,7 +92,7 @@ class WangEditor(object):
     """
 
     def __call__(self, field, **kwargs):
-        kwargs.setdefault('style', 'height:480px;')
+        # kwargs.setdefault('style', 'min-height:480px;resize:vertical;')
         script = """<script type="text/javascript">
             $(function() {
                 var E = window.wangEditor;
@@ -105,11 +105,12 @@ class WangEditor(object):
                 }
                 editor.create();
                 editor.txt.html(context_text.val());
+                E.fullscreen.init('#%s');
                 // 初始化 textarea 的值
                 // context_text.val(editor.txt.html());
                 
             });
-        </script>""" % (field.name+'editor', field.name)
+        </script>""" % (field.name+'editor', field.name, field.name+'editor')
 
         html = self.template % (html_params(id=field.name, name=field.name,
             style='display: none;'),
