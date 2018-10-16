@@ -1,9 +1,9 @@
 # coding: utf-8
 from werkzeug.datastructures import FileStorage
-from wtforms.fields import FileField, TextAreaField
+from wtforms.fields import Field, FileField, TextAreaField
 from wtforms.utils import unset_value
 from wtforms.validators import ValidationError
-from .widgets import FileInput, ImageInput, WangEditor
+from .widgets import FileInput, ImageInput, WangEditor, AreaInput
 
 
 __all__ = [
@@ -141,3 +141,34 @@ class XImageField(XFileField):
 
 class WangEditorField(TextAreaField):
     widget = WangEditor()
+
+
+class AreaField(Field):
+
+    widget = AreaInput()
+    defaults = dict(province=u'省份', city=u'城市', county=u'县/区')
+
+    def process(self, formdata, data=unset_value):
+        self.process_errors = []
+        if data is unset_value:
+            try:
+                data = self.default()
+            except TypeError:
+                data = self.default
+
+        self.object_data = data
+
+        try:
+            self.process_data(data)
+        except ValueError as e:
+            self.process_errors.append(e.args[0])
+
+        if formdata:
+            area = []
+            for field in ['province', 'city', 'county']:
+                name = '%s_%s' % (self.name, field)
+                data = formdata.get(name, '').strip()
+                if data.strip() and data != self.defaults.get(field):
+                    area.append(data)
+            if len(area) == 3:
+                self.data = '|'.join(area)

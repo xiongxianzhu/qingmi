@@ -5,7 +5,7 @@ from flask_admin.contrib.mongoengine.form import (CustomModelConverter
             as _CustomModelConverter)
 from flask_admin.model.fields import AjaxSelectField
 from wtforms import fields as f
-from qingmi.form.fields import XFileField, XImageField
+from qingmi.form.fields import XFileField, XImageField, AreaField
 
 
 class CustomModelConverter(_CustomModelConverter):
@@ -32,6 +32,10 @@ class CustomModelConverter(_CustomModelConverter):
     def conv_ximage(self, model, field, kwargs):
         return XImageField(max_size=field.max_size, allowed_extensions=field.allowed_extensions,
                           place=field.place, **kwargs)
+
+    @orm.converts('AreaField')
+    def conv_area(self, model, field, kwargs):
+        return AreaField(**kwargs)
 
     # @orm.converts('ReferenceField')
     # def conv_Reference(self, model, field, kwargs):
