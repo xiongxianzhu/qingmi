@@ -1,6 +1,7 @@
 # coding: utf-8
 from wtforms.widgets import html_params, HTMLString, TextArea
 from markupsafe import Markup, escape
+from qingmi.db.mongoengine.fields import FileProxy
 
 
 __all__ = [
@@ -10,7 +11,13 @@ __all__ = [
 
 class FileInput(object):
 
+    tmp = ('<div>'
+            ' <input type="checkbox" name="%(marker)s">删除</input>'
+            ' <i class="icon-file"></i>%(filename)s'
+            '</div>')
+    
     template = """
+        %(placeholder)s
         <div class="input-group">
             <span class="input-group-btn">
                 <div id="btn-image" autocomplete="off" class="btn btn-default" style="width:80px;padding:0;">
@@ -24,15 +31,52 @@ class FileInput(object):
         <div class="clearfix"></div>
     """
 
+
     def __call__(self, field, **kwargs):
+        # if field.data and isinstance(field.data, FileProxy):
+        #     data = field.data
+        #     print('=======', data.content, type(data.content))
+        #     print('=======', data.content.decode('utf-8'))
+
         kwargs.setdefault('id', field.id)
         kwargs.pop('class', None)
         kwargs.setdefault('autocomplete', 'off')
         kwargs.setdefault('style', 'width:100%;height:34px;margin-top:-34px;opacity:0;cursor:pointer;')
         kwargs.setdefault('onchange', "$(this).parents('.input-group').find('.input-insert-image').val($(this).val())")
+
+        placeholder = ''
+        if field.data and isinstance(field.data, FileProxy):
+            data = field.data
+
+            placeholder = self.tmp % {
+                'filename': escape(data.filename),
+                # 'content_type': escape(data.content_type),
+                # 'size': data.length // 1024,
+                'marker': '%s-delete' % field.name
+            }
+
+
         input = '<input %s>' % html_params(name=field.name, type='file', **kwargs)
-        html = self.template % dict(place=field.place or field.label.text, input=input)
+        html = self.template % dict(placeholder=placeholder, place=field.place or field.label.text,
+                                    input=input)
         return HTMLString(html)
+        # kwargs.setdefault('id', field.id)
+
+        # placeholder = ''
+        # if field.data and isinstance(field.data, FileProxy):
+        #     data = field.data
+
+        #     placeholder = self.template % {
+        #         'filename': escape(data.filename),
+        #         # 'content_type': escape(data.content_type),
+        #         # 'size': data.length // 1024,
+        #         'marker': '_%s-delete' % field.name
+        #     }
+
+        # return HTMLString('%s<input %s>' % (placeholder,
+        #                                     html_params(name=field.name,
+        #                                                 type='file',
+        #                                                 **kwargs)))
 
 
 class ImageInput(object):

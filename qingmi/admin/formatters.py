@@ -174,9 +174,34 @@ def format_image(image, link=True):
 
 
 @markupper
-def file_formatter(view, proxy):
+def file_formatter(view, file):
+    return format_file(file)
+
+
+def format_file(file, link=True):
+    if link:
+        tpl = '''
+            <a href=%s target="_blank" style="text-decoration:none">
+                <i class="fa fa-file" aria-hidden="true"></i>
+            </a>
+        '''
+        if file and file.link:
+            return tpl % quoteattr_list(file.link)
+        return ''
+
+    tpl = '''%s'''
+    if file and file.filename:
+        return tpl % quoteattr_list(proxy.filename)
+    return ''
+
+
+@markupper
+def formatter_file(view, proxy):
     if isinstance(proxy, ImageProxy):
         return image_formatter(view, proxy)
+    if isinstance(proxy, FileProxy):
+        # return file_formatter(view, proxy)
+        get_link(proxy.filename, proxy.link, max_length=40)
     return get_link(proxy.filename, proxy.link, max_length=60)
 
 

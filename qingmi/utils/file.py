@@ -13,7 +13,7 @@ def check_empty_folder(folder):
 def read(dest):
     """Read content of a file."""
     if os.path.exists(dest):
-        with open(dest) as f:
+        with open(dest, 'rb') as f:
             return f.read()
 
 def write(dest, body):

@@ -614,12 +614,27 @@ class StatsLog(db.Document):
 
 class Image(db.Document):
     """ 图片 """
-    key = db.StringField(max_length=128, verbose_name='KEY')
+    key = db.StringField(max_length=128, verbose_name='键名')
     name = db.StringField(max_length=128, verbose_name='图片名称')
     image = db.XImageField(verbose_name='图片')
     # image = db.StringField(verbose_name='图片名称')
     created_at = db.DateTimeField(default=datetime.now, verbose_name='创建时间')
     updated_at = db.DateTimeField(default=datetime.now, verbose_name='更新时间')
+
+    def __unicode__(self):
+        return '%s-%s' % (self.key, self.name)
+
+class File(db.Document):
+    """ 文件 """
+    key = db.StringField(max_length=128, verbose_name='键名')
+    name = db.StringField(max_length=128, verbose_name='文件名称')
+    file = db.XFileField(max_size=20*1024*1024, verbose_name='文件')
+    created_at = db.DateTimeField(default=datetime.now, verbose_name='创建时间')
+    updated_at = db.DateTimeField(default=datetime.now, verbose_name='更新时间')
+
+    meta = dict(
+        allow_inheritance=True,
+    )
 
     def __unicode__(self):
         return '%s-%s' % (self.key, self.name)

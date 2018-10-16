@@ -19,7 +19,7 @@ from qingmi.contrib.admin.mongoengine import AdminChangeLog
 from qingmi.contrib.admin.mongoengine.ajax import process_ajax_references
 from qingmi.contrib.admin.mongoengine.form import CustomModelConverter
 from qingmi.admin.formatters import (formatter_text, bool_formatter,
-                    select_formatter, file_formatter, file_link_formatter)
+                    select_formatter, formatter_file, file_link_formatter)
 from qingmi.utils import json_success, json_error
 from qingmi.db.mongoengine.fields import FileProxy
 from qingmi.admin.formatters import formatter_link
@@ -46,11 +46,11 @@ class ModelView(_ModelView):
     details_modal = True
 
     column_type_formatters = _ModelView.column_type_formatters or dict()
-    column_type_formatters[FileProxy] = file_formatter
+    column_type_formatters[FileProxy] = formatter_file
 
     column_type_formatters_detail = _ModelView.column_type_formatters_detail or dict()
     column_type_formatters_detail[bool] = _bool_formatter
-    column_type_formatters_detail[FileProxy] = file_formatter
+    column_type_formatters_detail[FileProxy] = formatter_file
     # column_type_formatters_detail[FileProxy] = file_link_formatter
 
     model_form_converter = CustomModelConverter
@@ -497,6 +497,7 @@ class ModelView(_ModelView):
 
         column_fmt = self.column_formatters.get(name)
         if column_fmt is not None:
+            # value = column_fmt(self, context, model, name)
             try:
                 value = column_fmt(self, context, model, name)
             except:
@@ -526,10 +527,11 @@ class ModelView(_ModelView):
                 type_fmt = formatter
                 break
         if type_fmt is not None:
-            try:
-                value = type_fmt(self, value)
-            except:
-                value = '该对象被删了'
+            value = type_fmt(self, value)
+            # try:
+            #     value = type_fmt(self, value)
+            # except:
+            #     value = '该对象被删了'
 
         return value
 

@@ -1,4 +1,5 @@
 # coding: utf-8
+from werkzeug.datastructures import FileStorage
 from wtforms.fields import FileField, TextAreaField
 from wtforms.utils import unset_value
 from wtforms.validators import ValidationError
@@ -18,20 +19,43 @@ class XFileField(FileField):
     widget = FileInput()
 
     def __init__(self, label=None, max_size=None,
-            extensions=DEFAULT_EXTENSIONS, place=None, **kwargs):
-        self.delete = False
+            allowed_extensions=None, place=None, **kwargs):
+        self._should_delete = False
         self.max_size = max_size
-        self.extensions = extensions
+        self.allowed_extensions = allowed_extensions or DEFAULT_EXTENSIONS
         self.place = place
         super(XFileField, self).__init__(label=label, **kwargs)
 
-    def pre_validate(self, form, extra_validators=tuple()):
-        if not self.data:
-            return
+    def _is_uploaded_file(self, data):
+        return (data and isinstance(data, FileStorage) and data.filename)
 
-        format = self.data.filename.split('.')[-1]
-        if self.extensions and format.lower() not in self.extensions:
-            raise ValidationError('%s 格式不支持上传' % format)
+    def is_file_allowed(self, filename):
+        """
+            Check if file extension is allowed.
+
+            :param filename:
+                File name to check
+        """
+        if not self.allowed_extensions:
+            return True
+
+        return ('.' in filename and
+                filename.rsplit('.', 1)[1].lower() in
+                map(lambda x: x.lower(), self.allowed_extensions))
+
+    def pre_validate(self, form, extra_validators=tuple()):
+        # Handle overwriting existing content
+        if not self._is_uploaded_file(self.data):
+            return
+        # if not self.data:
+        #     return
+
+        file_format = self.data.filename.split('.')[-1]
+        # if self.allowed_extensions and file_format.lower() not in self.allowed_extensions:
+        if self._is_uploaded_file(self.data) and not self.is_file_allowed(self.data.filename):
+            raise ValidationError('%s 格式不支持上传' % file_format)
+
+        # print('========', self.max_size, self.data, self.data.headers, self.data.content_length)
 
         if self.max_size and self.data.content_length > self.max_size:
             raise ValidationError('文件太大(%d/%d)' % (
@@ -73,9 +97,9 @@ class XFileField(FileField):
             except ValueError as e:
                 self.process_errors.append(e.args[0])
 
-            key = '%s-delete' % self.name
-            if formdata.get(key) == 'true':
-                self.delete = True
+            marker = '%s-delete' % self.name
+            if marker in formdata:
+                self._should_delete = True
 
         try:
             for filter in self.filters:
@@ -100,7 +124,7 @@ class XFileField(FileField):
         # setattr(obj, name, self.data)
         if self.data and not self.is_empty():
             setattr(obj, name, self.data)
-        elif self.delete:
+        elif self._should_delete:
             setattr(obj, name, None)
 
 
@@ -109,8 +133,10 @@ class XImageField(XFileField):
     widget = ImageInput()
 
     def __init__(self, label=None, max_size=None,
-            extensions=DEFAULT_IMAGE_EXTENSIONS, place=None, **kwargs):
-        super(XImageField, self).__init__(label=label, **kwargs)
+            allowed_extensions=DEFAULT_IMAGE_EXTENSIONS, place=None, **kwargs):
+        super(XImageField, self).__init__(label=label, max_size=max_size,
+            allowed_extensions=allowed_extensions,
+            place=place, **kwargs)
 
 
 class WangEditorField(TextAreaField):

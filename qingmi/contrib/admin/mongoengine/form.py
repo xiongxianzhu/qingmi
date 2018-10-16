@@ -25,12 +25,12 @@ class CustomModelConverter(_CustomModelConverter):
 
     @orm.converts('XFileField')
     def conv_xfile(self, model, field, kwargs):
-        return XFileField(max_size=field.max_size, extensions=field.extensions,
+        return XFileField(max_size=field.max_size, allowed_extensions=field.allowed_extensions,
                          place=field.place, **kwargs)
 
     @orm.converts('XImageField')
     def conv_ximage(self, model, field, kwargs):
-        return XImageField(max_size=field.max_size, extensions=field.extensions,
+        return XImageField(max_size=field.max_size, allowed_extensions=field.allowed_extensions,
                           place=field.place, **kwargs)
 
     # @orm.converts('ReferenceField')

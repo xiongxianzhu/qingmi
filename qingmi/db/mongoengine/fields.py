@@ -124,7 +124,7 @@ class XFileField(BaseField):
     proxy_class = FileProxy
 
     def __init__(self, max_size=2*1024*1024, is_rename=True,
-            extensions=None, config_key='STORAGE_SETTINGS',
+            allowed_extensions=None, config_key='STORAGE_SETTINGS',
             place='', filename_generator=None, auto_remove=False,
             **kwargs):
         """Initialises the custom file Field.
@@ -135,7 +135,7 @@ class XFileField(BaseField):
         """
         self.max_size = max_size
         self.is_rename = is_rename
-        self.extensions = extensions
+        self.allowed_extensions = allowed_extensions or DEFAULT_EXTENSIONS
         self.config_key = config_key
         self.place = place
         self._filename_generator = filename_generator
@@ -252,3 +252,11 @@ class ImageProxy(FileProxy):
 class XImageField(XFileField):
 
     proxy_class = ImageProxy
+
+    def __init__(self, max_size=2*1024*1024, is_rename=True,
+            allowed_extensions=None, config_key='STORAGE_SETTINGS',
+            place='', filename_generator=None, auto_remove=False,
+            **kwargs):
+        super().__init__(max_size, is_rename, allowed_extensions or IMAGES,
+                        config_key, place, filename_generator,
+                        auto_remove, **kwargs)
