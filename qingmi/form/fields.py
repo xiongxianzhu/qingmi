@@ -7,7 +7,7 @@ from .widgets import FileInput, ImageInput, WangEditor, AreaInput
 
 
 __all__ = [
-    'XFileField', 'XImageField', 'WangEditorField',
+    'XFileField', 'XImageField', 'WangEditorField', 'AreaField',
 ]
 
 DEFAULT_EXTENSIONS = ['txt', 'bz2', 'gz', 'tar', 'zip', 'rar', 'apk', 'jpg', 'jpeg', 'png', 'gif', 'bmp']

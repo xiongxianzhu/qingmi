@@ -2,6 +2,7 @@
 
 from flask import current_app
 from mongoengine import signals
+from mongoengine.fields import StringField
 from mongoengine.base.fields import BaseField
 from werkzeug import FileStorage
 from qingmi.storage import get_storage
@@ -11,6 +12,7 @@ from .generators import RandomGenerator
 
 __all__ = [
     'XFileField', 'XImageField', 'FileProxy', 'ImageProxy',
+    'AreaField',
 ]
 
 
@@ -260,3 +262,7 @@ class XImageField(XFileField):
         super().__init__(max_size, is_rename, allowed_extensions or IMAGES,
                         config_key, place, filename_generator,
                         auto_remove, **kwargs)
+
+
+class AreaField(StringField):
+    pass

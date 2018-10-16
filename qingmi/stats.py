@@ -5,6 +5,7 @@
 """
 
 import time
+import functools
 from datetime import datetime, timedelta
 from flask import request
 from qingmi.model import StatsLog
@@ -179,7 +180,7 @@ class StatsHelper(object):
                     for k, v in item['value'].items():
                         query = dict(key=key.format(id=item['_id'], key=k),
                                     day=day, hour=hour)
-                        StatsLog.objects(**query),update(
+                        StatsLog.objects(**query).update(
                             set__value=v,
                             set__updated_at=datetime.now(),
                             set_on_insert__created_at=datetime.now(),
