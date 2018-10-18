@@ -14,6 +14,13 @@ DEFAULT_EXTENSIONS = ['txt', 'bz2', 'gz', 'tar', 'zip', 'rar', 'apk', 'jpg', 'jp
 DEFAULT_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'bmp']
 
 
+def is_empty(file_object):
+    file_object.seek(0)
+    first_char = file_object.read(1)
+    file_object.seek(0)
+    return not bool(first_char)
+
+
 class XFileField(FileField):
 
     widget = FileInput()
@@ -125,7 +132,13 @@ class XFileField(FileField):
         if self.data and not self.is_empty():
             setattr(obj, name, self.data)
         elif self._should_delete:
+            field = getattr(obj, name, None)
+            if field is not None:
+                # If field should be deleted, clean it up
+                if self._should_delete:
+                    field.remove()
             setattr(obj, name, None)
+
 
 
 class XImageField(XFileField):

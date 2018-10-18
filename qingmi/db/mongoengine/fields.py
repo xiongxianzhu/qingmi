@@ -44,10 +44,11 @@ EXECUTABLES = ('so', 'ext', 'dll')
 DEFAULT_EXTENSIONS = TEXT + DOCUMENTS + IMAGES + AUDIO \
                         + DATA + SCRIPTS + ARCHIVES + EXECUTABLES
 
-def is_empty(stream):
-    stream.seek(0)
-    first_char = stream.read(1)
-    stream.seek(0)
+
+def is_empty(file_object):
+    file_object.seek(0)
+    first_char = file_object.read(1)
+    file_object.seek(0)
     return not bool(first_char)
 
 
@@ -192,7 +193,7 @@ class XFileField(BaseField):
         return filename
 
     def remove(self, filename):
-        if filename and self.is_auto_remove:
+        if filename or self.is_auto_remove:
             self.storage.delete(filename)
 
     def register_signals(self, instance):

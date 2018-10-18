@@ -36,10 +36,16 @@ class Storage(object):
         self._storage = storage_model(config)
 
         if t == 'local':
-            @app.route(config['base_link'] % '<path:filename>', endpoint=self.config_key.lower())
+            @app.route(config['base_link'] % '<path:filename>', endpoint=self.config_key.lower()+'.upload')
             def upload(filename):
                 # return send_from_directory(urljoin(config['base_path'], config['base_dir']), filename)
-                return send_from_directory(os.path.join(config['base_path'], config['base_dir']), filename)
+                return send_from_directory(os.path.join(config['base_path'],
+                        config['base_dir']), filename)
+
+            @app.route('/download/<path:filename>', endpoint=self.config_key.lower()+'.download')
+            def upload(filename):
+                return send_from_directory(os.path.join(config['base_path'],
+                        config['base_dir']), filename, as_attachment=True)
 
     def __getattr__(self, key):
         try:

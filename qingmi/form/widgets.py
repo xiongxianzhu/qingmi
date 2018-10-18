@@ -45,7 +45,7 @@ class FileInput(object):
         kwargs.setdefault('onchange', "$(this).parents('.input-group').find('.input-insert-image').val($(this).val())")
 
         placeholder = ''
-        if field.data and isinstance(field.data, FileProxy):
+        if field.data and isinstance(field.data, FileProxy) and field.data.filename:
             data = field.data
 
             placeholder = self.tmp % {
