@@ -230,7 +230,7 @@ class StatsHelper(object):
         self.stats(key, model, query=lambda x: x.distinct(sub), handle=len, **kwargs)
 
     def aggregate(self, key, model, *pipline, **kwargs):
-        self.stat(key, model, query=lambda x: list(x.aggregate(*pipline)), **kwargs)
+        self.stats(key, model, query=lambda x: list(x.aggregate(*pipline)), **kwargs)
 
     def aggregate2(self, key, model, model2, sub, *pipline, **kwargs):
         handle = lambda x: list(model.objects(id__in=x).aggregate(*pipline))
