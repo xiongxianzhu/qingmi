@@ -5,6 +5,7 @@ from mongoengine import signals
 from mongoengine.fields import StringField
 from mongoengine.base.fields import BaseField
 from werkzeug import FileStorage
+from PIL import Image
 from qingmi.storage import get_storage
 from qingmi.utils import md5
 from .generators import RandomGenerator
@@ -248,8 +249,9 @@ class XFileField(BaseField):
 class ImageProxy(FileProxy):
 
     @property
-    def link(self):
-        return self.instance.get_link(self.filename)
+    def size(self):
+        im = Image.open(self.path)
+        return im.size
 
 
 class XImageField(XFileField):
