@@ -158,24 +158,25 @@ def image_formatter(view, image):
 
 def format_image(image, link=True):
     if link:
-        # tpl = '''
-        #     <a href=%s target="_blank" style="text-decoration:none">
-        #         <img class="lazy" data-original=%s width=%s height=%s style="max-height: 40px; margin: -6px 0">
-        #     </a>
-        # '''
         tpl = '''
             <a href=%s target="_blank" style="text-decoration:none">
-                <img class="lazy" data-original=%s width="40px" height="40px" style="max-height: 40px; margin: -6px 0">
+                <img class="lazy" data-original=%s width=%s height=%s style="max-height: 40px; margin: -6px 0">
             </a>
         '''
+        # tpl = '''
+        #     <a href=%s target="_blank" style="text-decoration:none">
+        #         <img class="lazy" data-original=%s width="40px" height="40px" style="max-height: 40px; margin: -6px 0">
+        #     </a>
+        # '''
 
         if image and image.link:
             # jquery lazyload懒加载图片得设置width, height, 否则不生效
-            # width, height = image.size
-            # h = 40
-            # w = width / (height / h)
-            # return tpl % quoteattr_list(image.link, image.link, str(w)+'px', str(h)+'px')
-            return tpl % quoteattr_list(image.link, image.link)
+            # 不改变图片比例， 缩放图片
+            width, height = image.size
+            h = 40
+            w = width / (height / h)
+            return tpl % quoteattr_list(image.link, image.link, str(w)+'px', str(h)+'px')
+            # return tpl % quoteattr_list(image.link, image.link)
         return ''
 
     tpl = '''<img class="lazy" data-original=%s width=%s height=%s style="max-height: 40px; margin: -6px 0">'''
