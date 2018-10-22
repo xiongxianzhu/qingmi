@@ -5,6 +5,7 @@ from datetime import datetime
 from flask import current_app, get_flashed_messages
 from jinja2 import Environment, Markup
 from xml.sax.saxutils import escape
+from qingmi.utils import parse_datetime as _parse_datetime
 
 
 __all__ = [
@@ -39,13 +40,22 @@ class JinjaManager(object):
 
     @property
     def filters(self):
+        """ 自定义jinja过滤器 """
         return dict(
             datetimeformat=self.datetimeformat,
+            parse_datetime=self.parse_datetime,
             alert=self.alert_filter,
         )
 
-    def datetimeformat(value, format='%Y-%m-%d %H:%M:%S'):
-        return value.strftime(format)
+    def datetimeformat(self, value, format='%Y-%m-%d %H:%M:%S'):
+        if value:
+            return value.strftime(format)
+        return ''
+
+    def parse_datetime(self, data):
+        if data:
+            return _parse_datetime(data)
+        return ''
 
     @markupper
     def alert_msg(self, msg, style='danger'):

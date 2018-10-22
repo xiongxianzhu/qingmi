@@ -227,9 +227,11 @@ class StatsHelper(object):
         self.stats(key, model, query=lambda x: x.aggregate_sum(sub), **kwargs)
 
     def distinct(self, key, model, sub, **kwargs):
+        """ 分组 """
         self.stats(key, model, query=lambda x: x.distinct(sub), handle=len, **kwargs)
 
     def aggregate(self, key, model, *pipline, **kwargs):
+        """ 聚合 """
         self.stats(key, model, query=lambda x: list(x.aggregate(*pipline)), **kwargs)
 
     def aggregate2(self, key, model, model2, sub, *pipline, **kwargs):
@@ -241,6 +243,7 @@ class StatsHelper(object):
         self.funcs.append(f)
 
     def one(self, key, day, start, end, hour=0):
+        """ 生成一条统计后的记录 """
         for item in self.items:
             value = lambda **x: item['handle'](item['query'](item['model'].objects(**x)))
             self.save('%s_%s' % (key, item['key']), value, day, start, end, hour, **item['kwargs'])
@@ -248,27 +251,32 @@ class StatsHelper(object):
             f(key, day, start, end, hour)
 
     def day(self, start_day):
+        """ 按天统计 """
         start = datetime.strptime(str(start_day).split(' ')[0], '%Y-%m-%d')
         end = datetime.strptime(str(start_day + timedelta(days=1)).split(' ')[0], '%Y-%m-%d')
         self.one('date', start_day.strftime('%Y-%m-%d'), start, end)
 
     def recent_week(self, start_day):
+        """ 按最近一周统计 """
         start = datetime.strptime(str(start_day - timedelta(days=6)).split(' ')[0], '%Y-%m-%d')
         end = datetime.strptime(str(start_day + timedelta(days=1)).split(' ')[0], '%Y-%m-%d')
         self.one('recent_week', start_day.strftime('%Y-%m-%d'), start, end)
 
     def recent_month(self, start_day):
+        """ 按最近一月统计 """
         start = datetime.strptime(str(start_day - timedelta(days=30)).split(' ')[0], '%Y-%m-%d')
         end = datetime.strptime(str(start_day + timedelta(days=1)).split(' ')[0], '%Y-%m-%d')
         self.one('recent_month', start_day.strftime('%Y-%m-%d'), start, end)
 
-    def hour(self, now, day=True, by_week=True, by_month=True):
+    def hour(self, now, by_day=True, by_week=True, by_month=True):
+        """ 默认按小时统计， 可选按天， 按最近一周， 按最近一月统计 """
         start = now - timedelta(minutes=self.minutes)
         start = start - timedelta(minutes=start.minute, seconds=start.second,
                                     microseconds=start.microsecond)
         end = start + timedelta(hours=1)
         self.one('hour', start.strftime('%Y-%m-%d'), start, end, hour=start.hour)
-        if day:
+
+        if by_day:
             self.day(start)
         if by_week:
             self.recent_week(start)
@@ -280,10 +288,11 @@ class StatsHelper(object):
         now = datetime.now()
         while now >= self.start:
             print('stats:', now)
-            self.hour(now, day=now.hour == 0)
+            self.hour(now, by_day=now.hour == 0)
             now -= timedelta(hours=1)
 
     def run(self, mode='last', start=datetime(2018, 1, 1), minutes=1):
+        """ 运行统计程序 """
         self.start = start
         self.minutes = minutes
 
