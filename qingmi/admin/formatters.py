@@ -160,7 +160,7 @@ def format_image(image, link=True):
     if link:
         tpl = '''
             <a href=%s target="_blank" style="text-decoration:none">
-                <img class="lazy" data-original=%s width=%s height=%s style="max-height: 40px; margin: -6px 0">
+                <img class="lazy" data-original=%s width=%s height=%s style="max-height: 40px;">
             </a>
         '''
         # tpl = '''
@@ -179,7 +179,7 @@ def format_image(image, link=True):
             # return tpl % quoteattr_list(image.link, image.link)
         return ''
 
-    tpl = '''<img class="lazy" data-original=%s width=%s height=%s style="max-height: 40px; margin: -6px 0">'''
+    tpl = '''<img class="lazy" data-original=%s width=%s height=%s style="max-height: 40px;">'''
     if image and image.link:
         width, height = image.size
         h = 40

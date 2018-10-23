@@ -102,7 +102,7 @@ class Item(db.Document):
         """ 取值(布尔类型) """
         item = Item.objects(key=key).first()
         if item:
-            return True if item.value in ['true', 'True'] else False
+            return True if item.value in ['true', 'True', True] else False
         Item(key=key, data_type=Item.TYPE.BOOLEAN, value=value, name=name).save()
         return value
 
@@ -118,7 +118,7 @@ class Item(db.Document):
         item.value = value
         item.updated_at = datetime.now()
         item.save()
-        return True if value in ['true', 'True'] else False
+        return True if value in ['true', 'True', True] else False
 
     @staticmethod
     def choice(key, value='', name=None, sep='|', coerce=str):
