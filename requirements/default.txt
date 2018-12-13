@@ -1,5 +1,5 @@
 Flask==1.0.2
-click==6.7
+click==7.0
 # mongoengine==0.15.3
 mongoengine==0.10.1
 flask-mongoengine==0.9.5
