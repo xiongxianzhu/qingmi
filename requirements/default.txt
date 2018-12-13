@@ -7,7 +7,7 @@ Pillow==5.3.0
 wheezy.captcha==0.1.44
 Flask-Caching==1.4.0
 Flask-BabelEx==0.9.3
-redis==2.10.6
+redis==3.0.1
 Flask-Mail==0.9.1
 Flask-Admin==1.5.2
 Flask-Login==0.4.1
