@@ -96,7 +96,7 @@ name | string(40) | 是 |  | 组名
 created_at | datetime | 是 | datetime.now | 创建时间
 updated_at | datetime | 是 | datetime.now | 更新时间
 
-#### 5. 管理员登录日志-AdminLoginLog
+#### 6. 管理员登录日志-AdminLoginLog
 
 属性 | 类型 | 必填 | 默认值 | 备注
 :-|:-:|:-:|:-:|:-: 
@@ -113,7 +113,7 @@ created_at | datetime | 是 | datetime.now | 创建时间
 - LOGOUT='退出登录'
 - ERROR='登录认证失败'
 
-#### 6. 管理员操作日志-AdminChangeLog
+#### 7. 管理员操作日志-AdminChangeLog
 
 属性 | 类型 | 必填 | 默认值 | 备注
 :-|:-:|:-:|:-:|:-: 
