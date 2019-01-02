@@ -143,10 +143,10 @@ class Item(db.Document):
 
     @staticmethod
     def time(key, value='', name=None):
-        mat = "%Y-%m-%d %H:%M:%S"
-        value = Item.text(key, datetime.now().strftime(mat), name)
+        format_str = "%Y-%m-%d %H:%M:%S"
+        value = Item.text(key, datetime.now().strftime(format_str), name)
         try:
-            value = datetime.strptime(value, mat)
+            value = datetime.strptime(value, format_str)
         except:
             pass
         return value
