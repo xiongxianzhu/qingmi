@@ -306,16 +306,16 @@ class StatsLog(db.Document):
         if callable(day):
             day = day()
         day = str(day)[:10]
-        item = StatsLog.objects(key=key, uid=uid, xid=xid, label=label, day=day, hour=hour).first()
-        if item:
+        log = StatsLog.objects(key=key, uid=uid, xid=xid, label=label, day=day, hour=hour).first()
+        if log:
             if name:
-                item.name = name
-                item.save()
+                log.name = name
+                log.save()
             try:
-                if item.data_type == Item.TYPE.INT:
-                    return int(item.value)
-                if item.data_type == Item.TYPE.FLOAT:
-                    return float(item.value)
+                if log.data_type == StatsLog.TYPE.INT:
+                    return int(log.value)
+                if log.data_type == StatsLog.TYPE.FLOAT:
+                    return float(log.value)
             except ValueError as e:
                 return 0
         if save:
@@ -337,9 +337,9 @@ class StatsLog(db.Document):
         params = dict(set__value=value, set__data_type=data_type, set__updated_at=datetime.now())
         if name:
             params['set__name'] = name
-        item = StatsLog.objects(key=key, uid=uid, xid=xid, label=label,
+        log = StatsLog.objects(key=key, uid=uid, xid=xid, label=label,
                     day=day, hour=hour).modify(**params)
-        if item:
+        if log:
             return value
         if save:
             StatsLog(key=key, data_type=data_type, uid=uid, xid=xid, label=label,
@@ -359,10 +359,10 @@ class StatsLog(db.Document):
         params = dict(inc__value=value, set__data_type=data_type, set__updated_at=datetime.now())
         if name:
             params['set__name'] = name
-        item = StatsLog.objects(key=key, uid=uid, xid=xid, label=label,
+        log = StatsLog.objects(key=key, uid=uid, xid=xid, label=label,
                             day=day, hour=hour).modify(**params)
-        if item:
-            return item.value + value
+        if log:
+            return log.value + value
         if save:
             StatsLog(key=key, data_type=data_type, uid=uid, xid=xid, label=label,
                 day=day, hour=hour, value=start+value, name=name).save()
@@ -376,13 +376,13 @@ class StatsLog(db.Document):
         if callable(day):
             day = day()
         day = str(day)[:10]
-        item = StatsLog.objects(key=key, uid=uid, xid=xid, label=label,
+        log = StatsLog.objects(key=key, uid=uid, xid=xid, label=label,
                             day=day, hour=hour).first()
-        if item:
+        if log:
             if name:
-                item.name = name
-                item.save()
-            return item.value
+                log.name = name
+                log.save()
+            return log.value
         if save:
             StatsLog(key=key, data_type=StatsLog.TYPE.STRING, uid=uid, xid=xid, label=label,
                 day=day, hour=hour, value=value, name=name).save()
@@ -400,9 +400,9 @@ class StatsLog(db.Document):
         params = dict(set__value=value, set__updated_at=datetime.now())
         if name:
             params['set__name'] = name
-        item = StatsLog.objects(key=key, uid=uid, xid=xid, label=label,
+        log = StatsLog.objects(key=key, uid=uid, xid=xid, label=label,
                     day=day, hour=hour).modify(**params)
-        if item:
+        if log:
             return value
         if save:
             StatsLog(key=key, data_type=StatsLog.TYPE.STRING, uid=uid, xid=xid, label=label,
@@ -421,13 +421,13 @@ class StatsLog(db.Document):
         if type(value) is not bool:
             raise ValueError('Invalid value: %s, %s is not a boolean type value.' % (value, value))
 
-        item = StatsLog.objects(key=key, uid=uid, xid=xid, label=label,
+        log = StatsLog.objects(key=key, uid=uid, xid=xid, label=label,
                             day=day, hour=hour).first()
-        if item:
+        if log:
             if name:
-                item.name = name
-                item.save()
-            return item.value
+                log.name = name
+                log.save()
+            return log.value
         if save:
             StatsLog(key=key, data_type=StatsLog.TYPE.BOOLEAN, uid=uid, xid=xid, label=label,
                 day=day, hour=hour, value=value, name=name).save()
@@ -448,9 +448,9 @@ class StatsLog(db.Document):
         params = dict(set__value=value, set__updated_at=datetime.now())
         if name:
             params['set__name'] = name
-        item = StatsLog.objects(key=key, uid=uid, xid=xid, label=label, day=day,
+        log = StatsLog.objects(key=key, uid=uid, xid=xid, label=label, day=day,
                             hour=hour).modify(**params)
-        if item:
+        if log:
             return value
         if save:
             StatsLog(key=key, data_type=StatsLog.TYPE.BOOLEAN, uid=uid, xid=xid, label=label,
