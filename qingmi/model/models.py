@@ -466,7 +466,7 @@ class StatsLog(db.Document):
 
     @staticmethod
     def xset(key, uid='', xid='', label='', day='', hour=-1,
-                value=0, name=name, save=True):
+                value=0, name=None, save=True):
         """ 设置值 """
         return StatsLog.set(key, uid, xid, label, day, hour, value, name, save)
 
