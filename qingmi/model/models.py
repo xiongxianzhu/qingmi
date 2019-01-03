@@ -50,7 +50,7 @@ class Item(db.Document):
         item = Item.objects(key=key).first()
         if not item:
             item = Item(key=key)
-        if name:
+        if name is not None:
             item.name = name
         item.data_type = Item.TYPE.FLOAT if type(value) is float else Item.TYPE.INT
         item.value = value
@@ -61,12 +61,12 @@ class Item(db.Document):
     def inc(key, start=0, value=1, name=None):
         """ 递增，步长为num， 默认递增1； 不存在则创建 """
         params = dict(inc__value=value, set__updated_at=datetime.now())
-        if name:
+        if name is not None:
             params['set__name'] = name
         item = Item.objects(key=key).modify(**params)
         if not item:
             params = dict(key=key, data_type=Item.TYPE.INT, value=start+value)
-            if name:
+            if name is not None:
                 params['name'] = name
             Item(**params).save()
             return start + value
@@ -89,7 +89,7 @@ class Item(db.Document):
         item = Item.objects(key=key).first()
         if not item:
             item = Item(key=key)
-        if name:
+        if name is not None:
             item.name = name
         item.data_type = Item.TYPE.STRING
         item.value = value
@@ -112,7 +112,7 @@ class Item(db.Document):
         item = Item.objects(key=key).first()
         if not item:
             item = Item(key=key)
-        if name:
+        if name is not None:
             item.name = name
         item.data_type = Item.TYPE.BOOLEAN
         item.value = value
@@ -308,7 +308,7 @@ class StatsLog(db.Document):
         day = str(day)[:10]
         log = StatsLog.objects(key=key, uid=uid, xid=xid, label=label, day=day, hour=hour).first()
         if log:
-            if name:
+            if name is not None:
                 log.name = name
                 log.save()
             try:
@@ -335,7 +335,7 @@ class StatsLog(db.Document):
 
         data_type = StatsLog.TYPE.FLOAT if type(value) is float else StatsLog.TYPE.INT
         params = dict(set__value=value, set__data_type=data_type, set__updated_at=datetime.now())
-        if name:
+        if name is not None:
             params['set__name'] = name
         log = StatsLog.objects(key=key, uid=uid, xid=xid, label=label,
                     day=day, hour=hour).modify(**params)
@@ -357,7 +357,7 @@ class StatsLog(db.Document):
 
         data_type = StatsLog.TYPE.FLOAT if type(value) is float else StatsLog.TYPE.INT
         params = dict(inc__value=value, set__data_type=data_type, set__updated_at=datetime.now())
-        if name:
+        if name is not None:
             params['set__name'] = name
         log = StatsLog.objects(key=key, uid=uid, xid=xid, label=label,
                             day=day, hour=hour).modify(**params)
@@ -379,7 +379,7 @@ class StatsLog(db.Document):
         log = StatsLog.objects(key=key, uid=uid, xid=xid, label=label,
                             day=day, hour=hour).first()
         if log:
-            if name:
+            if name is not None:
                 log.name = name
                 log.save()
             return log.value
@@ -398,7 +398,7 @@ class StatsLog(db.Document):
         day = str(day)[:10]
 
         params = dict(set__value=value, set__updated_at=datetime.now())
-        if name:
+        if name is not None:
             params['set__name'] = name
         log = StatsLog.objects(key=key, uid=uid, xid=xid, label=label,
                     day=day, hour=hour).modify(**params)
@@ -425,7 +425,7 @@ class StatsLog(db.Document):
         log = StatsLog.objects(key=key, uid=uid, xid=xid, label=label,
                             day=day, hour=hour).first()
         if log:
-            if name:
+            if name is not None:
                 log.name = name
                 log.save()
             return True if log.value in ['true', 'True', True] else False
@@ -446,7 +446,7 @@ class StatsLog(db.Document):
         day = str(day)[:10]
 
         params = dict(set__value=value, set__updated_at=datetime.now())
-        if name:
+        if name is not None:
             params['set__name'] = name
         log = StatsLog.objects(key=key, uid=uid, xid=xid, label=label, day=day,
                             hour=hour).modify(**params)
