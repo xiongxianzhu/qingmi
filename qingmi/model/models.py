@@ -414,12 +414,13 @@ class StatsLog(db.Document):
     def bool(key, uid='', xid='', label='', day=lambda: today(), hour=-1,
                 value=False, name=None, save=True):
         """ 取值(布尔值) """
+        if type(value) != bool:
+            raise ValueError('The type of value is not bool.')
+        # if type(value) is not bool:
+        #     raise ValueError('Invalid value: %s, %s is not a boolean type value.' % (value, value))
         if callable(day):
             day = day()
         day = str(day)[:10]
-
-        if type(value) is not bool:
-            raise ValueError('Invalid value: %s, %s is not a boolean type value.' % (value, value))
 
         log = StatsLog.objects(key=key, uid=uid, xid=xid, label=label,
                             day=day, hour=hour).first()
@@ -427,7 +428,7 @@ class StatsLog(db.Document):
             if name:
                 log.name = name
                 log.save()
-            return log.value
+            return True if log.value in ['true', 'True', True] else False
         if save:
             StatsLog(key=key, data_type=StatsLog.TYPE.BOOLEAN, uid=uid, xid=xid, label=label,
                 day=day, hour=hour, value=value, name=name).save()
@@ -438,12 +439,11 @@ class StatsLog(db.Document):
     def set_bool(key, uid='', xid='', label='', day=lambda: today(), hour=-1,
                     value=False, name=None, save=True):
         """ 设置值(布尔值) """
+        if type(value) != bool:
+            raise ValueError('The type of value is not bool.')
         if callable(day):
             day = day()
         day = str(day)[:10]
-
-        if type(value) is not bool:
-            raise ValueError('Invalid value: %s, %s is not a boolean type value.' % (value, value))
 
         params = dict(set__value=value, set__updated_at=datetime.now())
         if name:
