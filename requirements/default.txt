@@ -3,7 +3,7 @@ click==7.0
 # mongoengine==0.15.3
 mongoengine==0.16.3
 flask-mongoengine==0.9.5
-Pillow==5.3.0
+Pillow==5.4.0
 wheezy.captcha==0.1.44
 Flask-Caching==1.4.0
 Flask-BabelEx==0.9.3
