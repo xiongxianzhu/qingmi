@@ -1,5 +1,3 @@
-# coding: utf-8
-
 import random
 from datetime import datetime
 from werkzeug.utils import cached_property
@@ -9,7 +7,6 @@ from qingmi.utils import get_ip, get_useragent
 
 class AdminUser(db.Document):
     """ 管理员 """
-
     uid = db.StringField(max_length=50, verbose_name='UID')
     username = db.StringField(max_length=50, verbose_name='用户名')
     password = db.StringField(max_length=128, verbose_name='密码')
@@ -61,7 +58,6 @@ class AdminUser(db.Document):
 
 class AdminGroup(db.Document):
     """ 管理组 """
-
     name = db.StringField(max_length=50, verbose_name='组名')
     power = db.ListField(db.ReferenceField('View'), verbose_name='使用权限')
     can_create = db.ListField(db.ReferenceField('View'), verbose_name='创建权限')
@@ -101,7 +97,7 @@ class View(db.Document):
     name = db.StringField(max_length=128, verbose_name='名称')
     label = db.StringField(max_length=128, verbose_name='标签')
     view_type = db.StringField(default=TYPE.DEFAULT, choices=TYPE.CHOICES,
-                                verbose_name='类型')
+        verbose_name='类型')
     # model = db.ReferenceField('Model', verbose_name='模型')
     menu_icon = db.StringField(max_length=128, verbose_name='图标')
     page_size = db.IntField(default=50, verbose_name='每页记录数')
@@ -175,8 +171,8 @@ class AdminChangeLog(db.Document):
         ua = kwargs.get('ua', get_useragent())
         ip = kwargs.get('ip', get_ip())
         AdminChangeLog(user=user, log_type=log_type, model=model,
-                        before_data=before_data, after_data=after_data,
-                        useragent=ua, ip=ip).save()
+            before_data=before_data, after_data=after_data,
+            useragent=ua, ip=ip).save()
 
     @staticmethod
     def change_data(user, model, **kwargs):

@@ -414,10 +414,8 @@ class StatsLog(db.Document):
     def bool(key, uid='', xid='', label='', day=lambda: today(), hour=-1,
                 value=False, name=None, save=True):
         """ 取值(布尔值) """
-        if type(value) != bool:
+        if type(value) is not bool:
             raise ValueError('The type of value is not bool.')
-        # if type(value) is not bool:
-        #     raise ValueError('Invalid value: %s, %s is not a boolean type value.' % (value, value))
         if callable(day):
             day = day()
         day = str(day)[:10]
@@ -439,7 +437,7 @@ class StatsLog(db.Document):
     def set_bool(key, uid='', xid='', label='', day=lambda: today(), hour=-1,
                     value=False, name=None, save=True):
         """ 设置值(布尔值) """
-        if type(value) != bool:
+        if type(value) is not bool:
             raise ValueError('The type of value is not bool.')
         if callable(day):
             day = day()
