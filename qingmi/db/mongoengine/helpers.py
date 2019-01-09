@@ -1,4 +1,5 @@
 from flask_mongoengine import Document
+from qingmi.utils.encoding import smart_text
 
 
 def get_model_field(model):
@@ -11,6 +12,19 @@ def get_model_field(model):
             if verbose_name:
                 field_dict[field] = verbose_name
     return field_dict
+
+
+def get_fields_in_model(instance):
+    """
+    Returns the list of fields in the given model instance. Checks whether to use the official _meta API or use the raw
+    data. This method excludes many to many fields.
+    :param instance: The model instance to get the fields for
+    :type instance: Model
+    :return: The list of fields for the given model (instance)
+    :rtype: list
+    """
+    assert isinstance(instance, Document)
+    return instance._fields
 
 
 def model_instance_diff(old, new):
@@ -33,14 +47,29 @@ def model_instance_diff(old, new):
     diff = {}
 
     if old is not None and new is not None:
-        fields = set(old._meta.fields + new._meta.fields)
-        model_fields = actionslog.get_model_fields(new._meta.model)
+        fields = set(list(old._fields.keys()) + list(new._fields.keys()))
     elif old is not None:
-        fields = set(get_fields_in_model(old))
-        model_fields = actionslog.get_model_fields(old._meta.model)
+        fields = set(list(get_fields_in_model(old).keys()))
     elif new is not None:
-        fields = set(get_fields_in_model(new))
-        model_fields = actionslog.get_model_fields(new._meta.model)
+        fields = set(list(get_fields_in_model(new).keys()))
     else:
         fields = set()
-        model_fields = None
+
+    for field in fields:
+        try:
+            old_value = smart_text(getattr(old, field, None))
+        except Exception as e:
+            old_value = None
+
+        try:
+            new_value = smart_text(getattr(new, field, None))
+        except Exception as e:
+            new_value = None
+
+        if old_value != new_value:
+            diff[field] = (smart_text(old_value), smart_text(new_value))
+
+    if len(diff) == 0:
+        diff = None
+
+    return diff

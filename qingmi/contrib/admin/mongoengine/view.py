@@ -116,12 +116,19 @@ class ModelView(_ModelView):
             query = query.order_by('%s%s' % ('-' if sort_desc else '', sort_column))
         else:
             order = self._get_default_order()
-            if order:
-                if len(order) <= 1 or order[1] is not True and order[1] is not False:
-                    query = query.order_by(*order)
-                else:
-                    query = query.order_by('%s%s' % ('-' if order[1] else '', order[0]))
 
+            # flask-admin <=1.5.2
+            # if order:
+            #     if len(order) <= 1 or order[1] is not True and order[1] is not False:
+            #         query = query.order_by(*order)
+            #     else:
+            #         query = query.order_by('%s%s' % ('-' if order[1] else '', order[0]))
+            # flask-admin >=1.5.3
+            if order:
+                keys = ['%s%s' % ('-' if desc else '', col)
+                        for (col, desc) in order]
+                query = query.order_by(*keys)
+                
         if page_size is None:
             page_size = self.page_size
 
