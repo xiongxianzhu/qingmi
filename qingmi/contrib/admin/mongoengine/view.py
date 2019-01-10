@@ -1,5 +1,6 @@
 # coding: utf-8
 import time
+import copy
 from datetime import datetime
 from flask import request, flash, redirect
 from flask_admin.babel import gettext, ngettext, lazy_gettext
@@ -128,7 +129,7 @@ class ModelView(_ModelView):
                 keys = ['%s%s' % ('-' if desc else '', col)
                         for (col, desc) in order]
                 query = query.order_by(*keys)
-                
+
         if page_size is None:
             page_size = self.page_size
 
@@ -188,6 +189,8 @@ class ModelView(_ModelView):
             form.populate_obj(model)
             self._on_model_change(form, model, True)
             model.save()
+            new = copy.deepcopy(model)
+            self.model_change_log(None, new, action='CREATE')
         except Exception as ex:
             if not self.handle_view_exception(ex):
                 flash(gettext('Failed to create record. %(error)s',
@@ -211,10 +214,13 @@ class ModelView(_ModelView):
                 Model instance to update
         """
         try:
+            old = copy.deepcopy(model)
             self.before_model_change(form, model, False)
             form.populate_obj(model)
             self._on_model_change(form, model, False)
             model.save()
+            new = copy.deepcopy(model)
+            self.model_change_log(old, new, action='UPDATE')
         except Exception as ex:
             if not self.handle_view_exception(ex):
                 flash(gettext('Failed to update record. %(error)s',
@@ -228,6 +234,10 @@ class ModelView(_ModelView):
 
         return True
 
+    def model_change_log(self, old, new, action='CREATE'):
+        """ model change log """
+        pass
+
     def delete_model(self, model):
         """
             Delete model helper
@@ -236,8 +246,10 @@ class ModelView(_ModelView):
                 Model instance
         """
         try:
+            old = copy.deepcopy(model)
             self.on_model_delete(model)
             model.delete()
+            self.model_change_log(old, None, action='DELETE')
         except Exception as ex:
             if not self.handle_view_exception(ex):
                 flash(gettext('Failed to delete record. %(error)s',
