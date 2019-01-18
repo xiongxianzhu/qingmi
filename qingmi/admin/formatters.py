@@ -121,7 +121,7 @@ def bool_formatter(view, value, model, name, disabled=False, action='list'):
 
     html_tpl = """<div class="onoffswitch">
         <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="%s" %s %s>
-        <label class="onoffswitch-label" for="%s" data-id="%s" data-name="%s" data-value="%s" data-url="%s">
+        <label class="onoffswitch-label onoffswitch-action" for="%s" data-id="%s" data-name="%s" data-value="%s" data-url="%s">
             <span class="onoffswitch-inner"></span>
             <span class="onoffswitch-switch"></span>
         </label>
