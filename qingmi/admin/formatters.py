@@ -40,9 +40,9 @@ def text2link(text, link, max_length=20, blank=True, cls=''):
     tpl = '<a class=%s href=%s title=%s target="_blank">%s</a>'
     if not blank:
         tpl = '<a class=%s href=%s title=%s>%s</a>'
-    text = text2short(text, max_length)
+    text_short = text2short(text, max_length)
     if text or type(text) == int:
-        return tpl % (quoteattr_list(cls, link, text) + (text,))
+        return tpl % (quoteattr_list(cls, link, text) + (text_short,))
     return ''
 
 
