@@ -54,10 +54,15 @@ def md5(data):
     return m.hexdigest()
 
 def b64(data):
-    """ base64算法编码字符串 """
+    """ base64 encode """
     """ type(data): str """
     base64_encrypt = base64.b64encode(data.encode('utf-8'))
     return str(base64_encrypt, 'utf-8')
+
+def b64decode(data):
+    """ base64 decode """
+    base64_decrypt = base64.b64decode(data.encode('utf-8'))
+    return str(base64_decrypt, 'utf-8')
 
 def base64_md5(data):
     """ 进行MD5加密，然后Base64编码 """
