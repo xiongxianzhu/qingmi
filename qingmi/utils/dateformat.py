@@ -41,8 +41,12 @@ def oneday(days):
     return datetime.strptime(str(oneday), '%Y-%m-%d')
 
 def datetimeformat(value, format='%Y-%m-%d %H:%M:%S'):
-    """ 时间格式化 """
+    """ 时间格式化成字符串 """
     return value.strftime(format)
+
+def datetimeparse(value, format='%Y-%m-%d %H:%M:%S'):
+    """ 时间格式化成datetime类型 """
+    return datetime.strptime(value, format)
 
 def parse_datetime(data):
     """ 格式化日期时间 """
