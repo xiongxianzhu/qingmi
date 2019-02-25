@@ -15,7 +15,7 @@ pypi安装
 
 源码安装
 -------
-python的版本需求为 ``Python3+``， 推荐 ``python3.6.5`` ：
+python的版本需求为 ``Python3+``， 推荐 ``python3.6.7`` ：
 
 ::
 
