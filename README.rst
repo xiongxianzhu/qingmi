@@ -2,13 +2,6 @@
 qingmi
 ===============
 
-.. image:: https://img.shields.io/github/issues/xiongxianzhu/qingmi.svg   :alt: GitHub issues   :target: https://github.com/xiongxianzhu/qingmi/issues
-.. image:: https://img.shields.io/github/forks/xiongxianzhu/qingmi.svg   :alt: GitHub forks   :target: https://github.com/xiongxianzhu/qingmi/network
-.. image:: https://img.shields.io/github/stars/xiongxianzhu/qingmi.svg   :alt: GitHub stars   :target: https://github.com/xiongxianzhu/qingmi/stargazers
-.. image:: https://img.shields.io/github/license/xiongxianzhu/qingmi.svg   :alt: GitHub license   :target: https://github.com/xiongxianzhu/qingmi/blob/master/LICENSE
-.. image:: https://img.shields.io/twitter/url/https/github.com/xiongxianzhu/qingmi.svg?style=social   :alt: Twitter   :target: https://twitter.com/intent/tweet?text=Wow:&url=https%3A%2F%2Fgithub.com%2Fxiongxianzhu%2Fqingmi
-
-
 Qingmi(青咪， 取自 ``情迷`` 谐音， 有 ``亲昵`` or ``亲密`` 之意)是一个基于Python3+Flask二次开发的应用层框架， 其内部封装了常用的模块和工具集， 主要用于针对flask web快速高效开发。
 
 安装
