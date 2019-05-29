@@ -5,7 +5,7 @@ mongoengine==0.17.0
 flask-mongoengine==0.9.5
 Pillow==6.0.0
 wheezy.captcha==0.1.44
-Flask-Caching==1.7.1
+Flask-Caching==1.7.2
 Flask-BabelEx==0.9.3
 redis==3.2.1
 Flask-Mail==0.9.1
