@@ -1,4 +1,4 @@
-Flask==1.0.3
+Flask==1.1.1
 click==7.0
 # mongoengine==0.15.3
 mongoengine==0.18.2
