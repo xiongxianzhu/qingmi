@@ -1,7 +1,7 @@
 Flask==1.1.1
 click==7.0
 # mongoengine==0.15.3
-mongoengine==0.18.2
+mongoengine==0.19.0
 flask-mongoengine==0.9.5
 Pillow==6.2.1
 wheezy.captcha==0.1.44
