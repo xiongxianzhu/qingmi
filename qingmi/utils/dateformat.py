@@ -3,11 +3,12 @@ from datetime import datetime, date, timedelta
 
 def today():
     """ 今天日期 """
-    """ 返回datetime.datetime类型的日期， 
+    """ 返回datetime.datetime类型的日期，
         如今天是datetime.datetime(2018, 8, 22, 0, 0)，
         若序列化后为'2018-08-22 00:00:00'
     """
     return datetime.strptime(str(date.today()), '%Y-%m-%d')
+
 
 def yesterday():
     """ 昨天日期 """
@@ -20,33 +21,38 @@ def yesterday():
     yesterday = today - diff_days
     return datetime.strptime(str(yesterday), '%Y-%m-%d')
 
+
 def tomorrow():
     """ 明天日期 """
     """ 返回datetime.datetime类型的日期，
         如明天是datetime.datetime(2018, 8, 21, 0, 0)，
         若序列化后为'2018-08-23 00:00:00'
     """
-    today = date.today() 
+    today = date.today()
     diff_days = timedelta(days=1)
-    tomorrow = today + diff_days  
+    tomorrow = today + diff_days
     return datetime.strptime(str(tomorrow), '%Y-%m-%d')
+
 
 def oneday(days):
     """ A few days later/ago """
-    if type(days) != int:
+    if not isinstance(days, int):
         raise ValueError('Invalid int value for days: %s.' % days)
-    today = date.today() 
+    today = date.today()
     diff_days = timedelta(days=days)
-    oneday = today + diff_days  
+    oneday = today + diff_days
     return datetime.strptime(str(oneday), '%Y-%m-%d')
+
 
 def datetimeformat(value, format='%Y-%m-%d %H:%M:%S'):
     """ 时间格式化成字符串 """
     return value.strftime(format)
 
+
 def datetimeparse(value, format='%Y-%m-%d %H:%M:%S'):
     """ 时间格式化成datetime类型 """
     return datetime.strptime(value, format)
+
 
 def parse_datetime(data):
     """ 格式化日期时间 """

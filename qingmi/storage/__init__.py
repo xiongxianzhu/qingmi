@@ -27,7 +27,7 @@ class Storage(object):
     def init_app(self, app, config_key='STORAGE_SETTINGS'):
         self.config_key = config_key
         config = app.config.get(config_key, {})
-        
+
         t = config.setdefault('storage_type', 'local')
         tpl = "Storage type: %r. Storage type not supported."
         assert t in storages, tpl % t
@@ -36,16 +36,26 @@ class Storage(object):
         self._storage = storage_model(config)
 
         if t == 'local':
-            @app.route(config['base_link'] % '<path:filename>', endpoint=self.config_key.lower()+'.upload')
+            @app.route(config['base_link'] % '<path:filename>',
+                       endpoint=self.config_key.lower() + '.upload')
             def upload(filename):
-                # return send_from_directory(urljoin(config['base_path'], config['base_dir']), filename)
-                return send_from_directory(os.path.join(config['base_path'],
-                        config['base_dir']), filename)
+                # return send_from_directory(urljoin(config['base_path'],
+                # config['base_dir']), filename)
+                return send_from_directory(
+                    os.path.join(
+                        config['base_path'],
+                        config['base_dir']),
+                    filename)
 
-            @app.route('/download/<path:filename>', endpoint=self.config_key.lower()+'.download')
+            @app.route('/download/<path:filename>',
+                       endpoint=self.config_key.lower() + '.download')
             def upload(filename):
-                return send_from_directory(os.path.join(config['base_path'],
-                        config['base_dir']), filename, as_attachment=True)
+                return send_from_directory(
+                    os.path.join(
+                        config['base_path'],
+                        config['base_dir']),
+                    filename,
+                    as_attachment=True)
 
     def __getattr__(self, key):
         try:
