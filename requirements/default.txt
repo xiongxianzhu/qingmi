@@ -11,6 +11,6 @@ redis==3.3.11
 Flask-Mail==0.9.1
 Flask-Admin==1.5.4
 Flask-Login==0.4.1
-ipython==7.11.1
+ipython==7.17.0
 blinker==1.4
 oss2==2.9.1
