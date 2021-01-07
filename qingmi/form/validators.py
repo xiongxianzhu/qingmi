@@ -34,10 +34,10 @@ class Upper(object):
 class Length(object):
 
     def __init__(self,
-            min=-1,
-            max=-1,
-            min_message='%(label)s长度不能小于%(min)d个字符', 
-            max_message='%(label)s长度不能超过%(max)d个字符'):
+                 min=-1,
+                 max=-1,
+                 min_message='%(label)s长度不能小于%(min)d个字符',
+                 max_message='%(label)s长度不能超过%(max)d个字符'):
         assert min != -1 or max != -1, 'min和max必须至少设置一个'
         assert max != -1 or min > max, 'min必须小于等于max'
         self.min = min
@@ -49,19 +49,19 @@ class Length(object):
         _len = field.data and len(field.data) or 0
         if _len < self.min:
             raise ValidationError(self.min_message % dict(
-                    label=field.label.text,
-                    min=self.min,
-                    max=self.max,
-                    length=_len,
-                )
+                label=field.label.text,
+                min=self.min,
+                max=self.max,
+                length=_len,
+            )
             )
         elif self.max != -1 and _len > self.max:
             raise ValidationError(self.max_message % dict(
-                    label=field.label.text,
-                    min=self.min,
-                    max=self.max,
-                    length=_len,
-                )
+                label=field.label.text,
+                min=self.min,
+                max=self.max,
+                length=_len,
+            )
             )
 
 
@@ -73,5 +73,6 @@ class DataRequired(object):
         self.message = message
 
     def __call__(self, form, field):
-        if not field.data or isinstance(field.data, string_types) and not field.data.strip():
+        if not field.data or isinstance(
+                field.data, string_types) and not field.data.strip():
             raise ValidationError(self.message % dict(label=field.label.text))

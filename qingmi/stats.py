@@ -22,7 +22,7 @@ def get_date_ranger(date_start, date_end):
     size = (end - start).days
 
     if size > 0:
-        for i in range(size+1):
+        for i in range(size + 1):
             dates.append((start + timedelta(days=i)).strftime('%Y-%m-%d'))
     return dates
 
@@ -147,7 +147,8 @@ def change_value_list(data, key, days):
         return list(map(lambda x: x[0] + x[1], zip(key_data, key2_data)))
     if style == '-':
         return list(map(lambda x: x[0] - x[1], zip(key_data, key2_data)))
-    return list(map(lambda x: get_value(x[0], x[1], data.get('default', True)), zip(key_data, key2_data)))
+    return list(map(lambda x: get_value(x[0], x[1], data.get(
+        'default', True)), zip(key_data, key2_data)))
 
 
 def hour_change_value_list(data, day, key, *args, **kwargs):
@@ -158,7 +159,8 @@ def hour_change_value_list(data, day, key, *args, **kwargs):
         return list(map(lambda x: x[0] + x[1], zip(key_data, key2_data)))
     if style == '-':
         return list(map(lambda x: x[0] - x[1], zip(key_data, key2_data)))
-    return list(map(lambda x: get_value(x[0], x[1], data.get('default', True)), zip(key_data, key2_data)))
+    return list(map(lambda x: get_value(x[0], x[1], data.get(
+        'default', True)), zip(key_data, key2_data)))
 
 
 class StatsHelper(object):
@@ -174,12 +176,12 @@ class StatsHelper(object):
         if callable(value):
             value = value(**kwargs)
 
-        if type(value) is list:
+        if isinstance(value, list):
             for item in value:
-                if type(item['value']) == dict:
+                if isinstance(item['value'], dict):
                     for k, v in item['value'].items():
                         query = dict(key=key.format(id=item['_id'], key=k),
-                                    day=day, hour=hour)
+                                     day=day, hour=hour)
                         StatsLog.objects(**query).update(
                             set__value=v,
                             set__updated_at=datetime.now(),
@@ -188,7 +190,7 @@ class StatsHelper(object):
                         )
                 else:
                     StatsLog.objects(key=key.format(**item), day=day,
-                        hour=hour).update(
+                                     hour=hour).update(
                         set__value=item['value'],
                         set__updated_at=datetime.now(),
                         set_on_insert__created_at=datetime.now(),
@@ -202,13 +204,28 @@ class StatsHelper(object):
                 upsert=True,
             )
 
-    def save(self, key, value, day, start, end, hour=0, field='created_at', **kwargs):
+    def save(
+            self,
+            key,
+            value,
+            day,
+            start,
+            end,
+            hour=0,
+            field='created_at',
+            **kwargs):
         if field is not None:
             kwargs.setdefault('%s__gte' % field, start)
             kwargs.setdefault('%s__lt' % field, end)
         self._save(key, value, day, hour, **kwargs)
 
-    def stats(self, key, model, query=lambda x: x.count(), handle=lambda x: x, **kwargs):
+    def stats(
+            self,
+            key,
+            model,
+            query=lambda x: x.count(),
+            handle=lambda x: x,
+            **kwargs):
         self.items.append(dict(
             key=key,
             model=model,
@@ -228,15 +245,26 @@ class StatsHelper(object):
 
     def distinct(self, key, model, sub, **kwargs):
         """ 分组 """
-        self.stats(key, model, query=lambda x: x.distinct(sub), handle=len, **kwargs)
+        self.stats(
+            key,
+            model,
+            query=lambda x: x.distinct(sub),
+            handle=len,
+            **kwargs)
 
     def aggregate(self, key, model, *pipline, **kwargs):
         """ 聚合 """
-        self.stats(key, model, query=lambda x: list(x.aggregate(*pipline)), **kwargs)
+        self.stats(
+            key,
+            model,
+            query=lambda x: list(
+                x.aggregate(
+                    *pipline)),
+            **kwargs)
 
     def aggregate2(self, key, model, model2, sub, *pipline, **kwargs):
-        handle = lambda x: list(model.objects(id__in=x).aggregate(*pipline))
-        query = lambda x: x.distinct(sub)
+        def handle(x): return list(model.objects(id__in=x).aggregate(*pipline))
+        def query(x): return x.distinct(sub)
         self.stats(key, model2, query=query, handle=handle, **kwargs)
 
     def func(self, f):
@@ -245,36 +273,56 @@ class StatsHelper(object):
     def one(self, key, day, start, end, hour=0):
         """ 生成一条统计后的记录 """
         for item in self.items:
-            value = lambda **x: item['handle'](item['query'](item['model'].objects(**x)))
-            self.save('%s_%s' % (key, item['key']), value, day, start, end, hour, **item['kwargs'])
+            value = lambda **x: item['handle'](item['query']
+                                               (item['model'].objects(**x)))
+            self.save(
+                '%s_%s' %
+                (key,
+                 item['key']),
+                value,
+                day,
+                start,
+                end,
+                hour,
+                **item['kwargs'])
         for f in self.funcs:
             f(key, day, start, end, hour)
 
     def day(self, start_day):
         """ 按天统计 """
         start = datetime.strptime(str(start_day).split(' ')[0], '%Y-%m-%d')
-        end = datetime.strptime(str(start_day + timedelta(days=1)).split(' ')[0], '%Y-%m-%d')
+        end = datetime.strptime(
+            str(start_day + timedelta(days=1)).split(' ')[0], '%Y-%m-%d')
         self.one('date', start_day.strftime('%Y-%m-%d'), start, end)
 
     def recent_week(self, start_day):
         """ 按最近一周统计 """
-        start = datetime.strptime(str(start_day - timedelta(days=6)).split(' ')[0], '%Y-%m-%d')
-        end = datetime.strptime(str(start_day + timedelta(days=1)).split(' ')[0], '%Y-%m-%d')
+        start = datetime.strptime(
+            str(start_day - timedelta(days=6)).split(' ')[0], '%Y-%m-%d')
+        end = datetime.strptime(
+            str(start_day + timedelta(days=1)).split(' ')[0], '%Y-%m-%d')
         self.one('recent_week', start_day.strftime('%Y-%m-%d'), start, end)
 
     def recent_month(self, start_day):
         """ 按最近一月统计 """
-        start = datetime.strptime(str(start_day - timedelta(days=30)).split(' ')[0], '%Y-%m-%d')
-        end = datetime.strptime(str(start_day + timedelta(days=1)).split(' ')[0], '%Y-%m-%d')
+        start = datetime.strptime(
+            str(start_day - timedelta(days=30)).split(' ')[0], '%Y-%m-%d')
+        end = datetime.strptime(
+            str(start_day + timedelta(days=1)).split(' ')[0], '%Y-%m-%d')
         self.one('recent_month', start_day.strftime('%Y-%m-%d'), start, end)
 
     def hour(self, now, by_day=True, by_week=True, by_month=True):
         """ 默认按小时统计， 可选按天， 按最近一周， 按最近一月统计 """
         start = now - timedelta(minutes=self.minutes)
         start = start - timedelta(minutes=start.minute, seconds=start.second,
-                                    microseconds=start.microsecond)
+                                  microseconds=start.microsecond)
         end = start + timedelta(hours=1)
-        self.one('hour', start.strftime('%Y-%m-%d'), start, end, hour=start.hour)
+        self.one(
+            'hour',
+            start.strftime('%Y-%m-%d'),
+            start,
+            end,
+            hour=start.hour)
 
         if by_day:
             self.day(start)
@@ -282,7 +330,6 @@ class StatsHelper(object):
             self.recent_week(start)
         if by_month:
             self.recent_month(start)
-
 
     def all(self):
         now = datetime.now()
@@ -315,5 +362,3 @@ class StatsHelper(object):
         #         self.all()
 
         # return run_stats
-
-

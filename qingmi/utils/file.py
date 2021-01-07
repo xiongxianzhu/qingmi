@@ -10,11 +10,13 @@ def check_empty_folder(folder):
             return True
         return False
 
+
 def read(dest):
     """Read content of a file."""
     if os.path.exists(dest):
         with open(dest, 'rb') as f:
             return f.read()
+
 
 def write(dest, body):
     """Write content to a file."""
@@ -25,11 +27,13 @@ def write(dest, body):
     with open(dest, 'wb+') as f:
         f.write(to_bytes(body))
 
+
 def delete(dest):
     """Delete the specified file."""
     if os.path.exists(dest):
         os.remove(dest)
 
+
 def clean_up(dir_path):
     if os.path.isdir(dir_path):
-            shutil.rmtree(dir_path)
+        shutil.rmtree(dir_path)

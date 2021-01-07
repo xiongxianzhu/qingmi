@@ -2,6 +2,7 @@
 
 from flask_restful import Resource as _Resource, reqparse
 
+
 class Resource(_Resource):
 
     def __init__(self):

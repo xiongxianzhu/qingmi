@@ -3,6 +3,7 @@ from flask_admin import Admin as _Admin, AdminIndexView
 
 ADMIN_MENUS_JSON = """"""
 
+
 class Admin(_Admin):
 
     def __init__(self, app=None, name=None,
@@ -28,8 +29,8 @@ class Admin(_Admin):
 
     def _set_admin_index_view(self, index_view=None,
                               endpoint=None, url=None):
-        self.index_view = (index_view or self.index_view or 
-                            AdminIndexView(endpoint=endpoint, url=url))
+        self.index_view = (index_view or self.index_view or
+                           AdminIndexView(endpoint=endpoint, url=url))
         self.endpoint = endpoint or self.index_view.endpoint
         self.url = url or self.index_view.url
 

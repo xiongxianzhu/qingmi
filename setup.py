@@ -2,7 +2,7 @@
 
 import os
 import re
-# import sys
+import sys
 
 from codecs import open
 
@@ -53,6 +53,11 @@ def read_file(filename):
         return ''
 
 
+if sys.argv[-1] == "publish":
+    os.system("python setup.py sdist bdist_wheel upload")
+    sys.exit()
+
+
 readme = read_file('README.rst')
 history = read_file('CHANGES.rst')
 
@@ -88,8 +93,8 @@ def parse_dist_meta():
 
 
 # -*- Requirements -*-
-def _strip_comments(l):
-    return l.split('#', 1)[0].strip()
+def _strip_comments(line):
+    return line.split('#', 1)[0].strip()
 
 
 def _pip_requirement(req):
@@ -102,7 +107,7 @@ def _pip_requirement(req):
 def _reqs(*f):
     return [
         _pip_requirement(r) for r in (
-            _strip_comments(l) for l in open(
+            _strip_comments(line) for line in open(
                 os.path.join(os.getcwd(), 'requirements', *f)).readlines()
         ) if r]
 

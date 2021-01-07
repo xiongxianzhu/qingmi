@@ -5,6 +5,7 @@ import sys
 import urllib.request
 import json
 
+
 def idcardcert(appcode, card_no):
     """ 身份证实名认证身份证二要素一致性验证 """
     host = 'http://idquery.market.alicloudapi.com'
@@ -22,5 +23,5 @@ def idcardcert(appcode, card_no):
         if content:
             return json.loads(content.decode("unicode-escape"))
         return content
-    except:
+    except BaseException:
         return None

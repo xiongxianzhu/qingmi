@@ -32,7 +32,8 @@ def text2span(text, short_text, cls=''):
     if text.startswith('http://') or text.startswith('https://'):
         return '<a class=%s href=%s title=%s target="_blank">%s</a>' % (
             quoteattr_list(cls, text, text) + escape_list(short_text))
-    return '<span class=%s title=%s>%s</span>' % (quoteattr_list(cls, text) + escape_list(short_text))
+    return '<span class=%s title=%s>%s</span>' % (
+        quoteattr_list(cls, text) + escape_list(short_text))
 
 
 def text2link(text, link, max_length=20, blank=True, cls=''):
@@ -41,7 +42,7 @@ def text2link(text, link, max_length=20, blank=True, cls=''):
     if not blank:
         tpl = '<a class=%s href=%s title=%s>%s</a>'
     text_short = text2short(text, max_length)
-    if text or type(text) == int:
+    if text or isinstance(text, int):
         return tpl % (quoteattr_list(cls, link, text) + (text_short,))
     return ''
 
@@ -56,15 +57,18 @@ def get_link(text, link, max_length=20, blank=True, html=False, **kwargs):
     tpl = '<a %shref=%s title=%s target="_blank">%s</a>'
     if not blank:
         tpl = '<a %shref=%s title=%s>%s</a>'
-    if text or type(text) == int:
-        extras = ' '.join('%s=%s' % (x, quoteattr(str(y))) for x, y in attrs.items())
+    if text or isinstance(text, int):
+        extras = ' '.join('%s=%s' % (x, quoteattr(str(y)))
+                          for x, y in attrs.items())
         extras = extras + ' ' if extras else ''
         if html:
             short = text
             text = ''
         else:
-            short = str(text)[:max_length] + '...' if len(str(text)) > max_length else str(text)
-        return tpl % ((extras,) + quoteattr_list(link, text) + (escape_list(short) if not html else (short,)))
+            short = str(text)[:max_length] + \
+                '...' if len(str(text)) > max_length else str(text)
+        return tpl % ((extras,) + quoteattr_list(link, text) +
+                      (escape_list(short) if not html else (short,)))
     return ''
 
 
@@ -117,7 +121,7 @@ def bool_formatter(view, value, model, name, disabled=False, action='list'):
     url = view.get_url('.ajax_change')
     val = str(value)
     is_disable = 'disabled' if disabled else ''
-    input_id = str(model.id) + '_' + name + '_' +  action
+    input_id = str(model.id) + '_' + name + '_' + action
 
     html_tpl = """<div class="onoffswitch">
         <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="%s" %s %s>
@@ -126,8 +130,8 @@ def bool_formatter(view, value, model, name, disabled=False, action='list'):
             <span class="onoffswitch-switch"></span>
         </label>
     </div>""" % (input_id, 'checked' if value else '',
-                is_disable,
-                input_id, model.id, name, val, url)
+                 is_disable,
+                 input_id, model.id, name, val, url)
     return html_tpl
 
 
@@ -135,10 +139,11 @@ def bool_formatter(view, value, model, name, disabled=False, action='list'):
 def select_formatter(view, value, model, name, choices):
     url = view.get_url('.ajax_change')
     selects = ''
-    id = str(model.id)+str(name)
+    id = str(model.id) + str(name)
 
     for k, v in choices.items():
-        select = '<li><a class="btn-formatter" data-key="%s" data-id="%s" data-name="%s" data-url="%s">%s</a></li>' % (k, model.id, name, url, v)
+        select = '<li><a class="btn-formatter" data-key="%s" data-id="%s" data-name="%s" data-url="%s">%s</a></li>' % (
+            k, model.id, name, url, v)
         selects = selects + select
 
     html = '''<div class="dropdown" style="min-width: 80px">
@@ -146,7 +151,7 @@ def select_formatter(view, value, model, name, choices):
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dLabel" style="min-width:100px">%s</ul>
-            </div>''' % (id, choices.get(str(value) if type(value) is Markup else value), selects)
+            </div>''' % (id, choices.get(str(value) if isinstance(value, Markup) else value), selects)
 
     return html
 
@@ -175,7 +180,11 @@ def format_image(image, link=True):
             width, height = image.size
             h = 40
             w = width / (height / h)
-            return tpl % quoteattr_list(image.link, image.link, str(w)+'px', str(h)+'px')
+            return tpl % quoteattr_list(
+                image.link,
+                image.link,
+                str(w) + 'px',
+                str(h) + 'px')
             # return tpl % quoteattr_list(image.link, image.link)
         return ''
 
@@ -184,7 +193,7 @@ def format_image(image, link=True):
         width, height = image.size
         h = 40
         w = width / (height / h)
-        return tpl % quoteattr_list(image.link, str(w)+'px', str(h)+'px')
+        return tpl % quoteattr_list(image.link, str(w) + 'px', str(h) + 'px')
     return ''
 
 

@@ -10,7 +10,8 @@ class QingmiUnicodeDecodeError(UnicodeDecodeError):
         super().__init__(*args)
 
     def __str__(self):
-        return '%s. You passed in %r (%s)' % (super().__str__(), self.obj, type(self.obj))
+        return '%s. You passed in %r (%s)' % (
+            super().__str__(), self.obj, type(self.obj))
 
 
 def smart_text(s, encoding='utf-8', strings_only=False, errors='strict'):
@@ -27,7 +28,13 @@ def smart_text(s, encoding='utf-8', strings_only=False, errors='strict'):
 
 
 _PROTECTED_TYPES = (
-    type(None), int, float, Decimal, datetime.datetime, datetime.date, datetime.time,
+    type(None),
+    int,
+    float,
+    Decimal,
+    datetime.datetime,
+    datetime.date,
+    datetime.time,
 )
 
 
