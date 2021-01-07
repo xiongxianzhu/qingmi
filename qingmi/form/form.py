@@ -63,7 +63,8 @@ class BaseForm(object):
 
     def __setitem__(self, name, value):
         """ Bind a field to this form. """
-        self._fields[name] = value.bind(form=self, name=name, prefix=self._prefix)
+        self._fields[name] = value.bind(
+            form=self, name=name, prefix=self._prefix)
 
     def __delitem__(self, name):
         """ Remove a field from this form. """
@@ -144,8 +145,8 @@ class BaseForm(object):
     def errors(self):
         if self._errors is None:
             self._errors = dict(
-                (name, f.errors) for name, f in iteritems(self._fields) if f.errors
-            )
+                (name, f.errors) for name, f in iteritems(
+                    self._fields) if f.errors)
         return self._errors
 
 
@@ -225,8 +226,13 @@ class Form(with_metaclass(FormMeta, BaseForm)):
     Meta = DefaultMeta
 
     def __init__(
-        self, formdata=None, obj=None, prefix="", data=None, meta=None, **kwargs
-    ):
+            self,
+            formdata=None,
+            obj=None,
+            prefix="",
+            data=None,
+            meta=None,
+            **kwargs):
         """
         :param formdata:
             Used to pass data coming from the enduser, usually `request.POST` or
@@ -254,7 +260,12 @@ class Form(with_metaclass(FormMeta, BaseForm)):
         meta_obj = self._wtforms_meta()
         if meta is not None and isinstance(meta, dict):
             meta_obj.update_values(meta)
-        super(Form, self).__init__(self._unbound_fields, meta=meta_obj, prefix=prefix)
+        super(
+            Form,
+            self).__init__(
+            self._unbound_fields,
+            meta=meta_obj,
+            prefix=prefix)
 
         for name, field in iteritems(self._fields):
             # Set all the fields to attributes so that they obscure the class
@@ -263,7 +274,8 @@ class Form(with_metaclass(FormMeta, BaseForm)):
         self.process(formdata, obj, data=data, **kwargs)
 
     def __setitem__(self, name, value):
-        raise TypeError("Fields may not be added to Form instances, only classes.")
+        raise TypeError(
+            "Fields may not be added to Form instances, only classes.")
 
     def __delitem__(self, name):
         del self._fields[name]
@@ -276,7 +288,8 @@ class Form(with_metaclass(FormMeta, BaseForm)):
             # This is done for idempotency, if we have a name which is a field,
             # we want to mask it by setting the value to None.
             unbound_field = getattr(self.__class__, name, None)
-            if unbound_field is not None and hasattr(unbound_field, "_formfield"):
+            if unbound_field is not None and hasattr(
+                    unbound_field, "_formfield"):
                 setattr(self, name, None)
             else:
                 super(Form, self).__delattr__(name)

@@ -44,7 +44,6 @@ class BaseStorage(object):
     base_link = ConfigItem('base_link', default='')
     base_extensions = ConfigItem('base_extensions', default=dict())
 
-
     def __init__(self, config=None):
         self.config = config
         self.extensions = self.base_extensions or IMAGES

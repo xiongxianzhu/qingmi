@@ -10,7 +10,19 @@ __all__ = [
     'XFileField', 'XImageField', 'WangEditorField', 'AreaField',
 ]
 
-DEFAULT_EXTENSIONS = ['txt', 'bz2', 'gz', 'tar', 'zip', 'rar', 'apk', 'jpg', 'jpeg', 'png', 'gif', 'bmp']
+DEFAULT_EXTENSIONS = [
+    'txt',
+    'bz2',
+    'gz',
+    'tar',
+    'zip',
+    'rar',
+    'apk',
+    'jpg',
+    'jpeg',
+    'png',
+    'gif',
+    'bmp']
 DEFAULT_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'bmp']
 
 
@@ -26,7 +38,7 @@ class XFileField(FileField):
     widget = FileInput()
 
     def __init__(self, label=None, max_size=None,
-            allowed_extensions=None, place=None, **kwargs):
+                 allowed_extensions=None, place=None, **kwargs):
         self._should_delete = False
         self.max_size = max_size
         self.allowed_extensions = allowed_extensions or DEFAULT_EXTENSIONS
@@ -58,8 +70,11 @@ class XFileField(FileField):
         #     return
 
         file_format = self.data.filename.split('.')[-1]
-        # if self.allowed_extensions and file_format.lower() not in self.allowed_extensions:
-        if self._is_uploaded_file(self.data) and not self.is_file_allowed(self.data.filename):
+        # if self.allowed_extensions and file_format.lower() not in
+        # self.allowed_extensions:
+        if self._is_uploaded_file(
+                self.data) and not self.is_file_allowed(
+                self.data.filename):
             raise ValidationError('%s 格式不支持上传' % file_format)
 
         # print('========', self.max_size, self.data, self.data.headers, self.data.content_length)
@@ -140,16 +155,25 @@ class XFileField(FileField):
             setattr(obj, name, None)
 
 
-
 class XImageField(XFileField):
 
     widget = ImageInput()
 
-    def __init__(self, label=None, max_size=None,
-            allowed_extensions=DEFAULT_IMAGE_EXTENSIONS, place=None, **kwargs):
-        super(XImageField, self).__init__(label=label, max_size=max_size,
+    def __init__(
+            self,
+            label=None,
+            max_size=None,
+            allowed_extensions=DEFAULT_IMAGE_EXTENSIONS,
+            place=None,
+            **kwargs):
+        super(
+            XImageField,
+            self).__init__(
+            label=label,
+            max_size=max_size,
             allowed_extensions=allowed_extensions,
-            place=place, **kwargs)
+            place=place,
+            **kwargs)
 
 
 class WangEditorField(TextAreaField):

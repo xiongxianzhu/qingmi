@@ -35,16 +35,19 @@ def get_email_verify_code(length=4):
             + '0123456789'
     return get_random_string(length, chars)
 
+
 def get_session_id(length=48):
     """ 生成session　id字符串 """
     chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' \
             + '0123456789-_'
     return get_random_string(length, chars)
 
+
 def get_invite_code(length=6):
     """ 生成邀请码 """
     chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
     return get_random_string(length, chars)
+
 
 def md5(data):
     """ md5算法加密字符串 """
@@ -53,16 +56,19 @@ def md5(data):
     m.update(data.encode('utf-8'))
     return m.hexdigest()
 
+
 def b64(data):
     """ base64 encode """
     """ type(data): str """
     base64_encrypt = base64.b64encode(data.encode('utf-8'))
     return str(base64_encrypt, 'utf-8')
 
+
 def b64decode(data):
     """ base64 decode """
     base64_decrypt = base64.b64decode(data.encode('utf-8'))
     return str(base64_decrypt, 'utf-8')
+
 
 def base64_md5(data):
     """ 进行MD5加密，然后Base64编码 """

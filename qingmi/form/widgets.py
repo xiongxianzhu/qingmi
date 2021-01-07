@@ -12,10 +12,10 @@ __all__ = [
 class FileInput(object):
 
     tmp = ('<div>'
-            ' <input type="checkbox" name="%(marker)s">删除</input>'
-            ' <i class="icon-file"></i>%(filename)s'
-            '</div>')
-    
+           ' <input type="checkbox" name="%(marker)s">删除</input>'
+           ' <i class="icon-file"></i>%(filename)s'
+           '</div>')
+
     template = """
         %(placeholder)s
         <div class="input-group">
@@ -31,7 +31,6 @@ class FileInput(object):
         <div class="clearfix"></div>
     """
 
-
     def __call__(self, field, **kwargs):
         # if field.data and isinstance(field.data, FileProxy):
         #     data = field.data
@@ -41,11 +40,17 @@ class FileInput(object):
         kwargs.setdefault('id', field.id)
         kwargs.pop('class', None)
         kwargs.setdefault('autocomplete', 'off')
-        kwargs.setdefault('style', 'width:100%;height:34px;margin-top:-34px;opacity:0;cursor:pointer;')
-        kwargs.setdefault('onchange', "$(this).parents('.input-group').find('.input-insert-image').val($(this).val())")
+        kwargs.setdefault(
+            'style',
+            'width:100%;height:34px;margin-top:-34px;opacity:0;cursor:pointer;')
+        kwargs.setdefault(
+            'onchange',
+            "$(this).parents('.input-group').find('.input-insert-image').val($(this).val())")
 
         placeholder = ''
-        if field.data and isinstance(field.data, FileProxy) and field.data.filename:
+        if field.data and isinstance(
+                field.data,
+                FileProxy) and field.data.filename:
             data = field.data
 
             placeholder = self.tmp % {
@@ -55,10 +60,12 @@ class FileInput(object):
                 'marker': '%s-delete' % field.name
             }
 
-
-        input = '<input %s>' % html_params(name=field.name, type='file', **kwargs)
-        html = self.template % dict(placeholder=placeholder, place=field.place or field.label.text,
-                                    input=input)
+        input = '<input %s>' % html_params(
+            name=field.name, type='file', **kwargs)
+        html = self.template % dict(
+            placeholder=placeholder,
+            place=field.place or field.label.text,
+            input=input)
         return HTMLString(html)
         # kwargs.setdefault('id', field.id)
 
@@ -112,11 +119,18 @@ class ImageInput(object):
         kwargs.setdefault('id', field.id)
         kwargs.pop('class', None)
         kwargs.setdefault('autocomplete', 'off')
-        kwargs.setdefault('style', 'width:100%;height:34px;margin-top:-34px;opacity:0;cursor:pointer;')
-        kwargs.setdefault('onchange', "$(this).parents('.input-group').find('.input-insert-image').val($(this).val())")
+        kwargs.setdefault(
+            'style',
+            'width:100%;height:34px;margin-top:-34px;opacity:0;cursor:pointer;')
+        kwargs.setdefault(
+            'onchange',
+            "$(this).parents('.input-group').find('.input-insert-image').val($(this).val())")
 
-        input = '<input %s>' % html_params(name=field.name, type='file', **kwargs)
-        html = self.input_tpl % dict(place=field.place or field.label.text, input=input)
+        input = '<input %s>' % html_params(
+            name=field.name, type='file', **kwargs)
+        html = self.input_tpl % dict(
+            place=field.place or field.label.text,
+            input=input)
         if field.data and hasattr(field.data, 'link') and field.data.link:
             html = self.template % dict(
                 thumb=field.data.link,
@@ -128,7 +142,7 @@ class ImageInput(object):
 
 
 class WangEditor(object):
-# class WangEditor(TextArea):
+    # class WangEditor(TextArea):
 
     template = """
     <textarea %s>\r\n%s</textarea>
@@ -152,14 +166,14 @@ class WangEditor(object):
                 E.fullscreen.init('#%s');
                 // 初始化 textarea 的值
                 // context_text.val(editor.txt.html());
-                
+
             });
-        </script>""" % (field.name+'editor', field.name, field.name+'editor')
+        </script>""" % (field.name + 'editor', field.name, field.name + 'editor')
 
         html = self.template % (html_params(id=field.name, name=field.name,
-            style='display: none;'),
-            field._value(),
-            html_params(id=field.name+'editor'))
+                                            style='display: none;'),
+                                field._value(),
+                                html_params(id=field.name + 'editor'))
 
         # return Markup(html) + script
         return HTMLString(html) + script
@@ -173,8 +187,7 @@ class AreaInput(object):
         '<div class="col-xs-4" style="padding: 0 8px"><select %s></select></div>'
         '<div class="col-xs-4" style="padding: 0 0 0 8px;"><select %s></select></div>'
         '<script type="text/javascript">area.init("%s", "%s", "%s", "%s")</script>'
-        '<div class="clearfix"></div></div>'
-    )
+        '<div class="clearfix"></div></div>')
 
     def __call__(self, field, **kwargs):
         datas = (field.data or '').split('|')

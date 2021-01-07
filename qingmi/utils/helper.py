@@ -8,7 +8,7 @@ case2 = string.ascii_uppercase + string.ascii_lowercase + string.digits
 
 
 def get_uid(num, length=6):
-    """ 
+    """
     根据用户索引生成用户的uid
 
     uid是由A-Z0-9共36个字符随机组成的指定长度的字符串
@@ -32,7 +32,7 @@ def get_uid(num, length=6):
 
 
 def get_uid2(num, length=4):
-    """ 
+    """
     根据用户索引生成用户的uid
 
     uid是由A-Za-z0-9共62个字符随机组成的指定长度的字符串
@@ -57,7 +57,7 @@ def get_uid2(num, length=4):
 
 
 def get_random_uid(num, length=4):
-    """ 
+    """
     根据用户索引生成随机的用户的uid
 
     uid是由A-Za-z0-9共62个字符随机组成的指定长度的字符串
