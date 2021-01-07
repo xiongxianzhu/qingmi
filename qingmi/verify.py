@@ -65,8 +65,9 @@ def get_verify_code(key, refresh=False, code_len=4):
             code=code,
             times=0
         )
-    
+
     return codes[key]['code'], codes[key]['times']
+
 
 def code2image(code):
     """ 将验证码生成验证码图片 """
@@ -74,22 +75,23 @@ def code2image(code):
     captcha_image = image.captcha(drawings=[
         background(),
         text(fonts=FONTS,
-            drawings=[
-                image.warp(),
-                image.rotate(),
-                image.offset()
-            ]),
+             drawings=[
+                 image.warp(),
+                 image.rotate(),
+                 image.offset()
+             ]),
         image.curve(),
         image.noise(),
         image.smooth()
     ])
-    
+
     image = captcha_image(code)
     out = StringIO()
     image.save(out, "jpeg", quality=75)
     response = make_response(out.getvalue())
     response.headers['Content-Type'] = 'image/jpeg'
     return response
+
 
 def validate_code(key):
     """ 检验验证码 """

@@ -12,6 +12,7 @@ __all__ = [
     'markup', 'markupper', 'first_error', 'JinjaManager', 'init_jinja',
 ]
 
+
 def markup(html):
     return Markup(html) if current_app.jinja_env.autoescape else html
 
@@ -67,7 +68,6 @@ class JinjaManager(object):
         # return markup('<div class="alert alert-%s"><button class="close" '
         #     'type="button" data-dismiss="alert" aria-hidden="true">&times;'
         #     '</button><span>%s</span></div>' % (style, msg))
-
 
     def alert_filter(self, form=None, style='danger'):
         error = first_error(form)

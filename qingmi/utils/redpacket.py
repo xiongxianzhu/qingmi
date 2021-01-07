@@ -54,7 +54,8 @@ class Split(object):
         for i in range(1, int(num)):
             # Random Safety High Limit Total
             safe_total = (total - (num - i) * min) / (num - i)
-            split_val = self.split_rmb_val(min * 100, int(safe_total * 100)) / 100
+            split_val = self.split_rmb_val(
+                min * 100, int(safe_total * 100)) / 100
             total -= split_val
             split_list.append(split_val)
         split_list.append(total)
