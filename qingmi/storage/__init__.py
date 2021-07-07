@@ -49,7 +49,7 @@ class Storage(object):
 
             @app.route('/download/<path:filename>',
                        endpoint=self.config_key.lower() + '.download')
-            def upload(filename):
+            def download(filename):
                 return send_from_directory(
                     os.path.join(
                         config['base_path'],
